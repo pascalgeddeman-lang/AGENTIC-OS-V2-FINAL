@@ -1,0 +1,11 @@
+{
+  "name": "agent-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OS agentique — plateforme centralisée (dashboard YouTube, machines, Claude CLI, niche finder)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js"
+  }
+}

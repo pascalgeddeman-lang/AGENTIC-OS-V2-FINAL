@@ -1,0 +1,343 @@
+{
+  "name": "3-4 L'Agent Spécial Miniature",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        144,
+        0
+      ],
+      "id": "0ed76da5-3b9d-40f3-ad5f-4020b1bc06b2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b315b3e5-24b6-40ca-b47c-3f53189490ab",
+              "name": "Miniature d'exemple",
+              "value": "https://i.ytimg.com/vi/GV23nzvJrS4/maxresdefault.jpg",
+              "type": "string"
+            },
+            {
+              "id": "3018465d-c39d-4514-896f-0bf3d82a70a8",
+              "name": "Thème de la nouvelle vidéo",
+              "value": "Fais intéressants sur les avions",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        0
+      ],
+      "id": "e4fceda6-6c09-42b4-a6e8-095ea5e040a7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['Miniature d\\'exemple'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "eee42fcd-3fa1-41d3-94b6-cc12bf9d91ff",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crée une miniature\n\nTitre de la vidéo : {{ $json['Thème de la nouvelle vidéo'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Générateur de Prompt de Miniature YouTube (inspiré d'une référence, sans la copier)\n\n  🅰️ A – Demande :\n    Tu reçois en input une IMAGE DE RÉFÉRENCE (miniature d'une vidéo, souvent concurrente) et une IDÉE/THÈME de vidéo.\n    Ton rôle : REGARDER la référence, en extraire les CODES de la niche, puis écrire UN SEUL prompt de génération d'image décrivant une NOUVELLE miniature — proche de l'univers de la référence, mais visuellement DIFFÉRENTE (nouveau sujet, nouvel angle, nouvelle mise en scène).\n    Le prompt intègre le TITRE en français, avec son placement et son style.\n    Génère EXACTEMENT 1 résultat.\n\n  🇬 G – Orientation :\n    role: Expert en miniatures YouTube et optimisation du taux de clic (CTR)\n    tone: percutant, visuel, orienté performance\n    output_count: 1\n    langue_du_prompt: rédige le prompt en français.\n    longueur: 700 à 1300 caractères.\n\n    principe_central_anti_copie:\n      - La référence sert d'INSPIRATION de STYLE, PAS de modèle à reproduire.\n      - Tu extrais des CODES abstraits (type de sujet, composition générale, palette, contraste, éclairage, style et emplacement du texte, présence d'un objet-repère graphique), PAS des détails précis.\n      - Tu génères ensuite une scène NOUVELLE : change l'angle de vue, la pose/position du sujet, le cadrage, la couleur dominante secondaire, et les éléments graphiques, pour obtenir une image clairement distincte.\n      - INTERDICTION de décrire la référence trait pour trait. N'inclus jamais dans le prompt un élément identifiant précis copié de la référence (même compagnie, même livrée, même objet exact placé au même endroit).\n\n    ce_que_le_prompt_DOIT_décrire:\n      - Le SUJET PRINCIPAL adapté au thème, avec un angle/cadrage DIFFÉRENT de la référence (ex. si la réf montre l'avion de profil vers la gauche, propose un autre angle : trois-quarts, de face, en plongée…).\n      - La composition générale (où est le sujet, ce qu'il y a en fond) en gardant l'ÉNERGIE de la niche mais pas la disposition exacte.\n      - La palette de couleurs et le niveau de contraste (dans l'esprit de la réf, sans copie servile).\n      - L'éclairage et l'ambiance.\n      - Le ou les BLOCS DE TEXTE : leur emplacement exact (ex. « bandeau titre en haut, sur toute la largeur »), leur style (police grasse type sans-serif condensée, majuscules, contour, couleur), et le TEXTE EXACT à afficher.\n      - Les contraintes techniques : format 16:9 (1280x720), lisible en petit, fort contraste, point focal unique, rendu net et haute qualité, photoréaliste si pertinent.\n\n    règles_titre:\n      - Le titre est en FRANÇAIS et écrit AVEC tous ses accents corrects (é, è, à, ê, ç…). Ne retire JAMAIS un accent (« révélés », pas « reveles »).\n      - JAMAIS de texte en anglais dans l'image, sauf si le thème l'exige explicitement.\n      - Titre court, percutant, honnête. Tu peux prévoir un titre principal (bandeau haut) + éventuellement un mot-clé secondaire (encadré bas), si la référence utilise ce code.\n      - Précise que le texte doit être orthographié EXACTEMENT comme écrit, sans lettre déformée ni faute.\n\n    constraints:\n      - Reprendre les CODES de la niche, jamais une copie littérale de la référence.\n      - Le prompt suppose qu'une image de référence PEUT être jointe au modèle image : rédige-le donc de façon à guider une NOUVELLE création, en précisant explicitement « ne pas reproduire la référence à l'identique, s'en inspirer uniquement pour le style ».\n      - Pas de logos de marques réelles ni de personnes réelles identifiables ; invente une livrée/marque neutre si besoin.\n      - Un seul champ de sortie : image_prompt. Aucun titre séparé.\n\n  🇪 E – Exemples :\n    good_examples:   # 🟢\n      - >\n        \"Crée une nouvelle miniature YouTube 16:9 photoréaliste, dans le style dynamique des chaînes d'aviation, en t'inspirant UNIQUEMENT du style de la référence (ne la reproduis pas). Sujet : un avion de ligne moderne à la livrée neutre bleu nuit et argent, vu en trois-quarts avant plongeant vers la droite, différent de la référence. Il survole une Terre courbée vue de l'espace, ciel bleu profond avec quelques nuages bas. Éclairage naturel puissant, couleurs saturées, contraste élevé. En haut, sur toute la largeur, un bandeau titre en grosses majuscules blanches sans-serif condensées avec contour noir : « JUSQU'OÙ PEUT-IL MONTER ? », le mot « MONTER » en rouge. En bas à droite, un petit encadré rouge avec texte blanc : « 15 000 mètres ». Orthographe exacte, accents respectés. Point focal unique sur l'avion, image nette, lisible en petite taille, haute qualité.\"\n    bad_examples:    # 🔴\n      - Texte en anglais : « INCREDIBLE SECRETS REVEALED » (interdit, titre doit être en français)\n      - Copie servile : « même avion British Airways blanc et bleu, de profil vers la gauche, avec un mètre ruban jaune à droite » (reproduit la référence trait pour trait → interdit)\n      - Titre sans accents : « SECRETS REVELES » (accents manquants → interdit)\n      - Prompt vague : « a youtube thumbnail about a plane flying high » (pas de placement de texte, pas de style, trop court)\n\n  🇳 N – Format :\n    format: JSON\n    rules:\n      - Réponds UNIQUEMENT avec du JSON valide et parsable.\n      - N'ajoute AUCUN texte, commentaire ou balise ``` autour du JSON.\n      - Un seul champ : \"image_prompt\". Aucun autre champ.\n      - Le titre français (avec accents) est écrit À L'INTÉRIEUR de image_prompt.\n    example_output: |\n      {\n        \"image_prompt\": \"Crée une nouvelle miniature YouTube 16:9... bandeau titre en haut « JUSQU'OÙ PEUT-IL MONTER ? »... orthographe et accents exacts... haute qualité.\"\n      }\n\n  🇹 T – Outils :\n    Tu as accès aux outils suivants :\n      - Think Tool : à utiliser SYSTÉMATIQUEMENT avant de répondre, pour (1) lister les CODES abstraits de la référence sans copier ses détails, (2) décider explicitement CE QUI CHANGE dans la nouvelle image (angle, sujet, couleurs, éléments), (3) choisir un titre français percutant et VÉRIFIER que tous ses accents sont présents, (4) vérifier que le prompt décrit bien le placement et le style du texte sans reproduire la référence trait pour trait.",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "5055359a-f913-4703-83af-75d593980579",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        528,
+        176
+      ],
+      "id": "9ffe0800-ccdf-4fc4-bc6d-f4cebae68dee",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        208
+      ],
+      "id": "ae80eb27-cbdb-480f-a184-aca5d07b565f",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"image_prompt\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        848,
+        176
+      ],
+      "id": "fd476bdd-e571-4d3f-9c62-f8b62d38a0d6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-2-image-to-image\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": \"{{ $json.output.image_prompt }}\",\n    \"input_urls\": [\n      \"{{ $('Edit Fields').item.json['Miniature d\\'exemple'] }}\"\n    ],\n    \"aspect_ratio\": \"16:9\"\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        0
+      ],
+      "id": "c3120363-f963-4da3-9977-686feb9755a7",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        0
+      ],
+      "id": "6ef0b93a-49dc-44ca-93f4-97067bb5973d",
+      "name": "Wait",
+      "webhookId": "8d6ffc4e-7c4a-4864-aa38-893f20fe2885"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "67dffa0f-0ddf-445d-bbfe-5e35467e8d2a",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1456,
+        0
+      ],
+      "id": "6682e249-2974-4109-a819-4e98d5509ede",
+      "name": "HTTP Request3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e790f12d-cc3f-45bf-b92a-b1dae93613f4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "irjgSferNmMWAR1M",
+  "tags": []
+}

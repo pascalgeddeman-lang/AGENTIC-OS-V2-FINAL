@@ -1,0 +1,1005 @@
+{
+  "name": "3-3 Automatisation Fair Use (Partage)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        192,
+        0
+      ],
+      "id": "93da1309-0ef7-4488-baf5-9254c10e7b84",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "be4a16ad-c5d1-4742-99ba-bb8aff050177",
+              "name": "Thème",
+              "value": "Faits intéressants sur les avions",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        0
+      ],
+      "id": "658953e0-51cd-4991-8c0e-eb8dc791be8e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Donne moi des prompts et des voix off pour une vidéo sur le thème : {{ $json['Thème'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Agent Générateur d'Histoire Narrée (50 scènes)\n\n  🅰️ A – Demande :\n    À partir d'un THÈME reçu dans le message utilisateur (ex. : \"faits divers sur les avions\"),\n    construis une histoire documentaire continue, découpée scène par scène.\n    Génère EXACTEMENT 50 scènes.\n\n  🇬 G – Orientation :\n    role: Narrateur documentaire captivant\n    tone: Immersif, fluide, storytelling qui donne envie de rester jusqu'à la fin\n    output_count: 50\n    voiceover_language: Français\n    query_language: Anglais (pour les banques de vidéos stock)\n    character_limit: Voix off = 15 à 20 mots par scène (compte les mots, pas les caractères)\n    constraints:\n      - La voix off de chaque scène fait STRICTEMENT entre 15 et 20 mots. Jamais moins, jamais plus.\n      - Chaque scène a UNE SEULE requête de recherche de 5 mots EXACTEMENT, en ANGLAIS.\n      - Cette requête décrit le VISUEL CONCRET et FILMABLE de la scène, pas des concepts abstraits.\n      - La requête doit permettre de retrouver 2 vidéos B-roll libres de droit qui ILLUSTRENT exactement ce que dit la voix off.\n      - Concordance obligatoire : voix off ↔ requête ↔ visuel recherché parlent de LA MÊME chose.\n      - Emploie des termes simples, courants et bien indexés en stock (mots concrets, pas d'abstractions).\n      - Continuité narrative : les 50 scènes s'enchaînent comme une seule histoire (accroche → développement → chute).\n      - Reste 100% universel : ne réutilise jamais un thème d'exemple, adapte-toi uniquement au thème reçu.\n      - Écris une voix off naturelle à lire à voix haute, sans jargon ni phrases robotiques.\n\n  🇪 E – Exemples : (illustratifs — NE PAS réutiliser tels quels)\n    good_examples:   # 🟢 requête de 5 mots, visuelle et concordante\n      - voiceover: \"Assise près du hublot, elle observe les nuages défiler pendant que l'avion traverse le ciel d'hiver.\"\n        search_query: \"woman looking airplane window clouds\"\n      - voiceover: \"Sur le tarmac gelé, les techniciens dégivrent soigneusement les ailes avant le décollage du matin.\"\n        search_query: \"ground crew de-icing airplane wing\"\n    bad_examples:    # 🔴 à éviter absolument\n      - voiceover: \"Le voyage commence.\"   # ❌ trop court (moins de 15 mots)\n        search_query: \"freedom journey beautiful emotional life\"   # ❌ abstrait, non filmable, déconnecté du visuel\n      - voiceover: \"Elle regarde dehors et pense à plein de choses en attendant que le temps passe tranquillement.\"   # ❌ vague, aucun visuel précis\n        search_query: \"nice winter airplane travel vibe\"   # ❌ non indexable, pas 5 mots concrets\n\n  🇳 N – Format :\n    format: JSON\n    rules:\n      - Réponds UNIQUEMENT avec du JSON valide et parsable.\n      - N'ajoute AUCUN texte, préambule, commentaire ou balise ``` autour du JSON.\n      - Une seule sortie JSON contenant les 50 scènes.\n      - Chaque scène : \"scene_number\" (int), \"voiceover\" (string FR, 15-20 mots), \"search_query\" (string EN, exactement 5 mots).\n    example_output: |\n      {\n        \"scenes\": [\n          {\n            \"scene_number\": 1,\n            \"voiceover\": \"Assise près du hublot, elle observe les nuages défiler pendant que l'avion traverse le ciel d'hiver.\",\n            \"search_query\": \"woman looking airplane window clouds\"\n          }\n        ]\n      }\n\n  🇹 T – Outils :\n    Tu as accès aux outils suivants :\n      - Think Tool : à utiliser SYSTÉMATIQUEMENT avant de répondre, pour poser l'arc narratif complet,\n        vérifier la continuité des 50 scènes, et t'assurer que chaque voix off fait 15-20 mots\n        et que chaque requête fait exactement 5 mots concrets et concordants."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "fe9bd736-3b22-4279-8d01-9bc0810cf844",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        288,
+        224
+      ],
+      "id": "f48b3260-244c-4a59-8dc5-2343133333fd",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        224
+      ],
+      "id": "a8ba95bd-a535-4351-b0b7-d61ba5c9cc6a",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"scenes\": [\n    {\n      \"scene_number\": 1,\n      \"voiceover\": \"string\",\n      \"search_query\": \"string\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        208
+      ],
+      "id": "9a04de90-d103-457e-947a-aa3ff0131932",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "01a1ee4a-4c0a-496e-99a0-686b79e2d0d5",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pexels.com/v1/videos/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.search_query }}"
+            },
+            {
+              "name": "per_page",
+              "value": "10"
+            },
+            {
+              "name": "orientation",
+              "value": "landscape"
+            },
+            {
+              "name": "size",
+              "value": "medium"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1264,
+        -192
+      ],
+      "id": "64df1e91-5a44-4b1d-a6ea-147886065d20",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "sxuVmYjD4h8Tlow3",
+          "name": "Pexels 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const flattened = [];\n\n// 1. Extraction des vidéos Pexels + choix du meilleur fichier vidéo max 1920x1080\nfor (let i = 0; i < items.length; i++) {\n  const item = items[i];\n  const videos = item.json.videos || [];\n\n  for (const v of videos) {\n    const files = (v.video_files || [])\n      .filter(f => f.link)\n      .filter(f => Number(f.width || 0) <= 1920)\n      .filter(f => Number(f.height || 0) <= 1080);\n\n    if (!files.length) continue;\n\n    const bestFile = files.sort((a, b) => {\n      const aw = Number(a.width || 0);\n      const bw = Number(b.width || 0);\n      const ah = Number(a.height || 0);\n      const bh = Number(b.height || 0);\n\n      if (bw !== aw) return bw - aw;\n      return bh - ah;\n    })[0];\n\n    flattened.push({\n      json: {\n        segment_index: i,\n        video_id: v.id,\n        duration: v.duration,\n        image: v.image,\n        video_url: bestFile.link || null,\n        width: bestFile.width || null,\n        height: bestFile.height || null\n      }\n    });\n  }\n}\n\n// 2. Scoring des clips\nfunction scoreItem(item) {\n  const d = Number(item.json.duration || 0);\n  const w = Number(item.json.width || 0);\n  const h = Number(item.json.height || 0);\n\n  let score = 0;\n\n  if (w > h) score += 2;\n\n  if (w >= 1920) score += 3;\n  else if (w >= 1280) score += 2;\n  else if (w >= 960) score += 1;\n\n  if (d >= 8 && d <= 20) score += 3;\n  else if (d >= 6) score += 2;\n  else if (d >= 4) score += 1;\n\n  return score;\n}\n\n// 3. Regroupement par segment\nconst groups = {};\n\nfor (const item of flattened) {\n  const key = Number(item.json.segment_index);\n\n  if (!groups[key]) groups[key] = [];\n\n  groups[key].push({\n    json: {\n      ...item.json,\n      score: scoreItem(item)\n    }\n  });\n}\n\n// 4. Sélection des meilleurs clips par segment\nconst keys = Object.keys(groups).map(Number).sort((a, b) => a - b);\nconst used = new Set();\nconst winners = [];\n\nconst minUsefulClipDuration = 2.5;\n\nfor (let idx = 0; idx < keys.length; idx++) {\n  const key = keys[idx];\n  let candidates = groups[key] || [];\n\n  if (!candidates.length) continue;\n\n  const wantedDuration = Number(candidates[0].json.segment_duration || 0);\n\n  const isNearEnd = idx >= keys.length - 2;\n  const maxClipsPerSegment = isNearEnd ? 6 : 4;\n  const targetCoverageFactor = isNearEnd ? 3.0 : 2.2;\n\n  const targetCoverage = Math.max(\n    wantedDuration * targetCoverageFactor,\n    wantedDuration + (isNearEnd ? 4 : 2)\n  );\n\n  candidates.sort((a, b) => {\n    if (b.json.score !== a.json.score) return b.json.score - a.json.score;\n    return Number(b.json.duration || 0) - Number(a.json.duration || 0);\n  });\n\n  let uniqueCandidates = candidates\n    .filter(v => !used.has(String(v.json.video_id)))\n    .filter(v => Number(v.json.duration || 0) >= minUsefulClipDuration);\n\n  let covered = 0;\n  let selectedForSegment = 0;\n\n  for (const candidate of uniqueCandidates) {\n    if (selectedForSegment >= maxClipsPerSegment) break;\n\n    winners.push({\n      json: {\n        video_url: candidate.json.video_url,\n        duration: candidate.json.duration\n      }\n    });\n\n    used.add(String(candidate.json.video_id));\n    covered += Number(candidate.json.duration || 0);\n    selectedForSegment += 1;\n\n    if (covered >= targetCoverage) break;\n  }\n\n  if (selectedForSegment === 0) {\n    const relaxed = candidates\n      .filter(v => Number(v.json.duration || 0) >= minUsefulClipDuration)\n      .slice(0, isNearEnd ? 3 : 2);\n\n    for (const candidate of relaxed) {\n      winners.push({\n        json: {\n          video_url: candidate.json.video_url,\n          duration: candidate.json.duration\n        }\n      });\n\n      selectedForSegment += 1;\n\n      if (selectedForSegment >= (isNearEnd ? 3 : 2)) break;\n    }\n  }\n\n  if (selectedForSegment === 0 && candidates.length > 0) {\n    winners.push({\n      json: {\n        video_url: candidates[0].json.video_url,\n        duration: candidates[0].json.duration\n      }\n    });\n  }\n}\n\nreturn winners;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        -192
+      ],
+      "id": "065c2800-dd55-4681-ac4f-42bac6d70bbf",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/inworld-tts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": {{ JSON.stringify($json.voiceover) }},\n  \"voice\": \"Alain (fr)\",\n  \"sample_rate_hertz\": 48000\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        160
+      ],
+      "id": "f278f0b2-66f9-4402-b12b-6f78f35c2a65",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        160
+      ],
+      "id": "82d9fd0d-4f34-4dd6-9a57-b62068461a42",
+      "name": "Wait",
+      "webhookId": "9e1c9edf-12b8-49b2-aceb-9a26d919f26b"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1264,
+        160
+      ],
+      "id": "a5bc1917-664d-42b5-b165-c22fe3b4ba59",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/metadata",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"media_url\": \"{{ $json.audio.url }}\"\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1488,
+        160
+      ],
+      "id": "a73c2063-ce42-4d67-b100-0dc9d649a21d",
+      "name": "HTTP Request3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1632,
+        160
+      ],
+      "id": "1be63527-6e2f-4cc7-98a6-966b6e5a885f",
+      "name": "Wait1",
+      "webhookId": "9e1c9edf-12b8-49b2-aceb-9a26d919f26b"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1776,
+        160
+      ],
+      "id": "0a413da7-cefc-437e-9f92-cb7a7af09b7d",
+      "name": "HTTP Request4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2112,
+        -48
+      ],
+      "id": "09652123-82dc-4b42-af3c-42bf6e8b3fa4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/workflow-utilities/trim-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video_url }}\",\n  \"start_time\": 1,\n  \"duration\": {{ $json.media.duration }}\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2320,
+        -48
+      ],
+      "id": "921caa0b-1099-4890-bd7e-9a7625173f77",
+      "name": "HTTP Request5",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2464,
+        -48
+      ],
+      "id": "0100a2e5-3552-4fdd-b575-7f7680a4a2e4",
+      "name": "Wait2",
+      "webhookId": "9e1c9edf-12b8-49b2-aceb-9a26d919f26b"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2608,
+        -48
+      ],
+      "id": "ce6c0045-b411-42c1-b427-136450d955a8",
+      "name": "HTTP Request6",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-audio-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video.url }}\",\n  \"audio_url\": \"{{ $('Merge').item.json.media.url }}\"\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2848,
+        -48
+      ],
+      "id": "c089c71f-ddb3-4212-988d-a99fd6906c49",
+      "name": "HTTP Request7",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2992,
+        -48
+      ],
+      "id": "333c883d-f4cc-4cf7-8790-78f98ef5f535",
+      "name": "Wait3",
+      "webhookId": "9e1c9edf-12b8-49b2-aceb-9a26d919f26b"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3136,
+        -48
+      ],
+      "id": "c13def62-8a5e-4576-81e9-e66c5e4d8b0d",
+      "name": "HTTP Request8",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "video.url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        304
+      ],
+      "id": "e839409e-2263-42e0-815f-61683e725d30",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": {{ JSON.stringify($json.url) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2320,
+        304
+      ],
+      "id": "eea3603a-640a-4bee-885d-7996474478ae",
+      "name": "HTTP Request9",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2464,
+        304
+      ],
+      "id": "bb493b13-82d2-4e07-98c9-1cb9935a9bae",
+      "name": "Wait4",
+      "webhookId": "9e1c9edf-12b8-49b2-aceb-9a26d919f26b"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2608,
+        304
+      ],
+      "id": "72b13eb7-d477-4f1e-b134-05509aa9c154",
+      "name": "HTTP Request10",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/veed/subtitles",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video.url }}\",\n  \"preset\": \"flex\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2848,
+        304
+      ],
+      "id": "96e01d3c-1c09-49d5-8165-e3610e582b47",
+      "name": "HTTP Request11",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2992,
+        304
+      ],
+      "id": "99d4b6a0-9192-4a9c-a661-24df2a1de059",
+      "name": "Wait5",
+      "webhookId": "9e1c9edf-12b8-49b2-aceb-9a26d919f26b"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3136,
+        304
+      ],
+      "id": "9a192812-2f37-4a85-861b-cb4bee50d50d",
+      "name": "HTTP Request12",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request9": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request10": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request11": {
+      "main": [
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "775b170d-b4cd-4896-850b-650b80ba816e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [
+    {
+      "id": "a27de9e3-21ba-45d4-a7d3-24c5116d8e4e",
+      "nodeIds": [
+        "64df1e91-5a44-4b1d-a6ea-147886065d20",
+        "065c2800-dd55-4681-ac4f-42bac6d70bbf"
+      ],
+      "name": "Clips Vidéos"
+    },
+    {
+      "id": "8fea99e7-3446-44d0-87b6-8078b76e0196",
+      "nodeIds": [
+        "f278f0b2-66f9-4402-b12b-6f78f35c2a65",
+        "82d9fd0d-4f34-4dd6-9a57-b62068461a42",
+        "a5bc1917-664d-42b5-b165-c22fe3b4ba59"
+      ],
+      "name": "Voix off"
+    },
+    {
+      "id": "a553bd78-eb9d-4e92-a897-341a369ac578",
+      "nodeIds": [
+        "a73c2063-ce42-4d67-b100-0dc9d649a21d",
+        "1be63527-6e2f-4cc7-98a6-966b6e5a885f",
+        "0a413da7-cefc-437e-9f92-cb7a7af09b7d"
+      ],
+      "name": "Metadata"
+    },
+    {
+      "id": "a6cb941e-e874-41a9-939b-be17013b0836",
+      "nodeIds": [
+        "921caa0b-1099-4890-bd7e-9a7625173f77",
+        "0100a2e5-3552-4fdd-b575-7f7680a4a2e4",
+        "ce6c0045-b411-42c1-b427-136450d955a8"
+      ],
+      "name": "Découpe (Trim)"
+    },
+    {
+      "id": "cea5efc6-9d4f-4f82-8388-f5df7859f4b3",
+      "nodeIds": [
+        "c089c71f-ddb3-4212-988d-a99fd6906c49",
+        "333c883d-f4cc-4cf7-8790-78f98ef5f535",
+        "c13def62-8a5e-4576-81e9-e66c5e4d8b0d"
+      ],
+      "name": "Merge Audio & Vidéo"
+    },
+    {
+      "id": "5f4eacec-5227-4b29-b826-8dab9e6a2b94",
+      "nodeIds": [
+        "eea3603a-640a-4bee-885d-7996474478ae",
+        "bb493b13-82d2-4e07-98c9-1cb9935a9bae",
+        "72b13eb7-d477-4f1e-b134-05509aa9c154"
+      ],
+      "name": "Merge Video"
+    },
+    {
+      "id": "19d03739-f7e9-4d6c-885b-5c01275e4bf3",
+      "nodeIds": [
+        "96e01d3c-1c09-49d5-8165-e3610e582b47",
+        "99d4b6a0-9192-4a9c-a661-24df2a1de059",
+        "9a192812-2f37-4a85-861b-cb4bee50d50d"
+      ],
+      "name": "Sous Titrage"
+    }
+  ],
+  "id": "9H5pH4bmEJBjJd6Y",
+  "tags": []
+}

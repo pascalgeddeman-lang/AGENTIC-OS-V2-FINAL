@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Logo Kie.ai (« A » circuit bleu dégradé) -->
+  <rect width="64" height="64" rx="14" fill="#f4f1ea"/>
+  <defs>
+    <linearGradient id="kg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#18a9f1"/>
+      <stop offset="1" stop-color="#1c3fc4"/>
+    </linearGradient>
+  </defs>
+  <g stroke="url(#kg)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 49 30 13h4l16 36" stroke-width="6"/>
+    <path d="M24 40h16" stroke-width="6"/>
+    <path d="M37 22l4 9M43 36l2 5" stroke-width="5"/>
+  </g>
+  <circle cx="31" cy="14" r="4.5" fill="url(#kg)"/>
+  <circle cx="31" cy="14" r="1.8" fill="#f4f1ea"/>
+  <circle cx="14" cy="50" r="4.5" fill="url(#kg)"/>
+  <circle cx="14" cy="50" r="1.8" fill="#f4f1ea"/>
+  <circle cx="50" cy="50" r="4.5" fill="url(#kg)"/>
+  <circle cx="50" cy="50" r="1.8" fill="#f4f1ea"/>
+</svg>

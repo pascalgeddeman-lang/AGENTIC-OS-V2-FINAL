@@ -1,0 +1,4 @@
+# Données locales : coffre chiffré, tokens OAuth, caches, conversations
+data/
+node_modules/
+output/

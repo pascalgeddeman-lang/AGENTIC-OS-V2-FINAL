@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kie Image Studio</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f25c26'/><circle cx='50' cy='50' r='20' fill='%2316181d'/></svg>" />
+</head>
+<body>
+
+  <!-- ============ LOGIN ============ -->
+  <div id="login-screen" class="login-screen hidden">
+    <form id="login-form" class="login-panel">
+      <div class="login-mark"></div>
+      <h1>Kie Image Studio</h1>
+      <p class="login-sub">Connecte-toi pour générer</p>
+      <label class="field">
+        <span>Identifiant</span>
+        <input type="text" id="login-user" autocomplete="username" required />
+      </label>
+      <label class="field">
+        <span>Mot de passe</span>
+        <input type="password" id="login-pass" autocomplete="current-password" required />
+      </label>
+      <p id="login-error" class="login-error" hidden>Identifiants incorrects</p>
+      <button type="submit" class="btn-primary">Se connecter</button>
+    </form>
+  </div>
+
+  <!-- ============ APP ============ -->
+  <div id="app" class="app hidden">
+
+    <!-- Sidebar : tous les contrôles -->
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div class="mark"></div>
+        <span class="app-name">Kie <em>Studio</em></span>
+        <button id="logout-btn" class="icon-btn" title="Se déconnecter">⏻</button>
+      </div>
+
+      <div id="drive-banner" class="drive-banner hidden">
+        <p><strong>Google Drive non connecté.</strong> Requis pour l'image → image et la galerie.</p>
+        <button id="drive-connect-btn" class="btn-drive">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 3h7L23 16l-3.5 6h-15L1 16 8.5 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          Connecter Google Drive
+        </button>
+      </div>
+
+      <div class="sidebar-scroll">
+        <div class="control-group">
+          <span class="group-label">Mode</span>
+          <div class="segmented" id="mode-seg">
+            <button class="seg active" data-mode="t2i">Texte → Image</button>
+            <button class="seg" data-mode="i2i">Image → Image</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="group-label">Format</span>
+          <div class="segmented small" id="format-seg">
+            <button class="seg active" data-format="16:9">16:9</button>
+            <button class="seg" data-format="9:16">9:16</button>
+            <button class="seg" data-format="1:1">1:1</button>
+            <button class="seg" data-format="3:2">3:2</button>
+            <button class="seg" data-format="2:3">2:3</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="group-row">
+            <span class="group-label">Images à générer</span>
+            <div class="stepper">
+              <button id="total-minus">−</button>
+              <span id="total-num">4</span>
+              <button id="total-plus">+</button>
+            </div>
+          </div>
+          <div class="alloc-status">
+            <span id="alloc-remaining">4 à répartir</span>
+            <button id="alloc-even" class="link-btn">répartir également</button>
+          </div>
+          <div class="alloc-list" id="alloc-list"></div>
+        </div>
+
+        <div class="control-group hidden" id="upload-group">
+          <span class="group-label">Images sources</span>
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" multiple hidden />
+            <span>Déposer ou <u>parcourir</u></span>
+            <span class="dz-hint">JPEG · PNG · WebP · 10 Mo max</span>
+          </div>
+          <div class="thumbs" id="thumbs"></div>
+          <p class="group-hint" id="upload-limits"></p>
+        </div>
+
+        <div class="control-group grow">
+          <span class="group-label">Prompt</span>
+          <textarea id="prompt" placeholder="Décris l'image que tu veux générer…"></textarea>
+          <p class="group-hint" id="prompt-hint"></p>
+        </div>
+      </div>
+
+      <div class="sidebar-foot">
+        <button id="generate-btn" class="btn-primary" disabled>Générer</button>
+        <p class="group-hint" id="batch-note"></p>
+      </div>
+    </aside>
+
+    <!-- Zone principale -->
+    <main class="main">
+      <nav class="topbar">
+        <div class="tabs">
+          <button class="tab active" data-view="create">Session</button>
+          <button class="tab" data-view="gallery">Galerie <span id="gallery-count" class="count"></span></button>
+        </div>
+        <button id="clear-btn" class="link-btn hidden">Effacer la session</button>
+      </nav>
+
+      <section id="view-create" class="view">
+        <div id="empty-create" class="empty">
+          <div class="empty-art"></div>
+          <p><strong>Prêt à créer.</strong></p>
+          <p>Choisis tes outils à gauche, répartis tes images, écris ton prompt et lance.</p>
+        </div>
+        <div class="grid" id="results"></div>
+      </section>
+
+      <section id="view-gallery" class="view hidden">
+        <div id="empty-gallery" class="empty hidden">
+          <div class="empty-art"></div>
+          <p><strong>Aucune image enregistrée.</strong></p>
+          <p>Chaque image générée est automatiquement archivée ici.</p>
+        </div>
+        <div class="grid" id="gallery"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

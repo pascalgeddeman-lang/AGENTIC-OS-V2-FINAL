@@ -1,0 +1,373 @@
+{
+  "name": "3-2 Bot Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        -80
+      ],
+      "id": "7a535ca5-812a-4594-a9f3-1693439b7bca",
+      "name": "Telegram Trigger",
+      "webhookId": "185d5e01-d5cc-4c59-b5b0-f0e144156ba2",
+      "credentials": {
+        "telegramApi": {
+          "id": "bZEPN5uy0xJAuA9G",
+          "name": "V2 bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "483510f8-d616-4095-a011-85cae8314c74"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texte"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6e714169-6aa5-4818-8015-60e378cc67c8",
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vocal"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        -80
+      ],
+      "id": "7b9fc1b6-663d-49d2-9326-54187a6059cc",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4dbd79c8-9dd0-4b31-b369-2be0a31916ef",
+              "name": "message",
+              "value": "={{ $json.message?.text || $json.text || \"\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -128
+      ],
+      "id": "f1b78045-04e0-4922-9e06-1d27af241250",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        64
+      ],
+      "id": "841f7df7-0ce6-4467-bb4d-8d5456d765b3",
+      "name": "Get a file",
+      "webhookId": "ec723078-355e-4147-bb85-176c71de521c",
+      "credentials": {
+        "telegramApi": {
+          "id": "bZEPN5uy0xJAuA9G",
+          "name": "V2 bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\n\nconst buffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n\nreturn [\n  {\n    json: {\n      audio_base64: buffer.toString('base64'),\n      audio_format: 'ogg'\n    },\n    binary: item.binary\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        64
+      ],
+      "id": "defecba0-d74a-4d7a-b725-6c3534a85933",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"openai/whisper-1\",\n    \"input_audio\": {\n      \"data\": \"{{ $json.audio_base64 }}\",\n      \"format\": \"{{ $json.audio_format }}\"\n    }\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        64
+      ],
+      "id": "49707ad1-b842-486b-8c78-aa7b9318254d",
+      "name": "HTTP Request",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "Interprète le message que j'ai reçu et réponds-moi sur Telegram grâce au tool auquel tu as accès."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        -128
+      ],
+      "id": "c7d6db65-c3c8-4d67-a55d-6dcc307d2eef",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        384,
+        32
+      ],
+      "id": "466220e0-1de4-4d9a-89ac-cb94808675e4",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        16
+      ],
+      "id": "6b7d4c68-6a9d-42df-86b4-740359c63f0d",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', ``, 'string') }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        96
+      ],
+      "id": "e867b4da-b2dc-4078-b56d-871331ffc1cf",
+      "name": "Send a text message in Telegram",
+      "webhookId": "6885366d-85bc-4993-843b-c55398cdb486",
+      "credentials": {
+        "telegramApi": {
+          "id": "bZEPN5uy0xJAuA9G",
+          "name": "V2 bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message in Telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9d7b4437-d43e-4d7f-b6e7-dc896f49efab",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "OKdKi0cIy9aHkYQV",
+  "tags": []
+}

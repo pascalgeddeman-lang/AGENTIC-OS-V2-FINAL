@@ -1,0 +1,8 @@
+{
+  "name": "kie-image-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "local": "node local-server.js"
+  }
+}

@@ -1,0 +1,940 @@
+{
+  "name": "2-10",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        -240
+      ],
+      "id": "7582effc-ec70-4aba-b3dc-bc13fb2e5276",
+      "name": "START"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Je veux que tu me crée des prompts sur le thème : {{ $json['Thème'] }}\nNombre de scènes attendues : {{ $json['Nombre scène'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Générateur de Prompts d'Images + Voix Off pour Histoires Enfantines (avec personnage de référence)\n\n  🅰️ A – Demande :\n    À partir du thème d'histoire et du nombre de scènes fournis dans le message\n    utilisateur, générer pour CHAQUE scène : un prompt d'image détaillé ET un\n    texte de voix off qui raconte cette partie de l'histoire.\n    Chaque prompt image sera envoyé AVEC une image de référence du personnage\n    principal. Les prompts doivent donc S'APPUYER sur ce personnage de référence.\n    Génère EXACTEMENT autant de scènes que le NOMBRE DE SCÈNES demandé\n    (N = nombre de scènes indiqué dans l'user message). Ni plus, ni moins.\n\n  🇬 G – Orientation :\n    role: Directeur artistique et conteur spécialisé dans l'illustration et la narration jeunesse\n    tone: imaginatif, chaleureux, féérique\n    output_count: N (= nombre de scènes fourni dans le message utilisateur)\n    character_limit:\n      - prompt image : MINIMUM 250 caractères (riche et précis, pas de maximum strict)\n      - voix off : 10 MOTS MAXIMUM, une seule phrase, lisible en moins de 5 secondes à voix haute\n    constraints:\n      - PERSONNAGE DE RÉFÉRENCE : chaque prompt image doit EXPLICITEMENT demander de reprendre le personnage principal fourni en image de référence, de conserver son identité (visage, traits, morphologie, couleur de peau, coiffure) STRICTEMENT identique dans toutes les scènes, et de le PROJETER dans l'univers de la scène.\n      - Il est autorisé (et attendu) de CHANGER sa tenue, ses accessoires, sa posture et son décor selon la scène, MAIS ce doit toujours rester le MÊME personnage, reconnaissable d'une scène à l'autre.\n      - Formule chaque prompt de façon à ce qu'il fonctionne comme une instruction d'édition/projection à partir de l'image de référence (ex. : \"Reprends le personnage principal de l'image de référence, garde son visage et ses traits identiques, et place-le dans...\").\n      - VOIX OFF : chaque voix off ne doit JAMAIS dépasser 10 mots (idéalement 10), pour rester sous 5 secondes de lecture. Phrase courte, fluide et évocatrice.\n      - L'ensemble des scènes doit former UNE histoire cohérente et complète : scène 1 = introduction, scènes du milieu = développement, dernière scène = conclusion.\n      - La voix off de chaque scène doit s'enchaîner naturellement avec la précédente et la suivante (fil narratif continu, sans répétition ni rupture).\n      - Le thème reste GÉNÉRALISTE : adapte-toi à tout univers (aventure, amitié, voyage, magie, saisons, métiers, objets qui prennent vie, enfants héros, etc.), pas uniquement animalier.\n      - Style visuel OBLIGATOIRE à rappeler dans chaque prompt image : illustration enfantine, douce et colorée, rendu HD, 4K, très haute qualité, détails nets.\n      - Décrire concrètement dans le prompt image : la tenue adaptée à la scène, l'action, le décor, la lumière, l'ambiance, les couleurs, l'angle de vue.\n      - La voix off doit être écrite dans la langue de l'utilisateur final, à hauteur d'enfant, simple et évocatrice.\n      - Interdit : contenu effrayant, violent ou inadapté aux enfants ; texte ou lettres dans l'image ; prompts vagues ou génériques ; modifier l'identité du personnage de référence ; voix off de plus de 15 mots.\n\n  🇪 E – Exemples :\n    good_examples:   # 🟢\n      - image: \"Reprends le personnage principal de l'image de référence en gardant son visage, ses traits et sa coiffure strictement identiques. Habille-le d'une tenue d'explorateur douce et colorée, et place-le à l'entrée d'une forêt enchantée baignée de lumière dorée, entouré de fleurs lumineuses. Illustration enfantine chaleureuse, style storybook, couleurs pastel vives, rendu HD 4K, ultra détaillé, très haute qualité.\"\n        voice_over: \"Ce matin-là, notre héros partit explorer la forêt magique et mystérieuse.\"   # 11 mots\n      - image: \"Reprends exactement le même personnage principal de l'image de référence, visage et traits inchangés, mais vêtu cette fois d'un manteau étoilé. Place-le sur un pont de nuages roses au-dessus d'un royaume scintillant sous les étoiles. Ambiance féérique et rassurante, illustration jeunesse, palette chaude et pastel, détails nets, rendu HD 4K, qualité premium.\"\n        voice_over: \"Là-haut, un royaume entier flottait parmi les étoiles scintillantes.\"   # 9-10 mots\n    bad_examples:    # 🔴\n      - image: \"Un enfant dans une forêt.\" (trop court, vague, ne mentionne pas le personnage de référence, aucun style ni détail)\n        voice_over: \"Il marche.\" (plat, ne raconte rien, ne fait pas avancer l'histoire)\n      - image: \"Crée un nouveau personnage aux cheveux blonds dans un château sombre et effrayant, style horreur.\" (invente un personnage au lieu de reprendre la référence, effrayant, inadapté, pas de style enfantin HD)\n        voice_over: \"Notre héros avança lentement dans la forêt sombre, puis découvrit une immense cabane ancienne cachée derrière les arbres, et décida d'y entrer prudemment.\" (beaucoup trop long, dépasse 15 mots / 5 secondes)\n\n  🇳 N – Format :\n    format: JSON\n    rules:\n      - Réponds UNIQUEMENT avec du JSON valide et parsable.\n      - N'ajoute AUCUN texte, préambule, commentaire ou balise ``` autour du JSON.\n      - Le tableau \"scenes\" doit contenir EXACTEMENT N éléments (N = nombre de scènes demandé).\n      - Chaque \"prompt\" fait au minimum 250 caractères, mentionne explicitement le personnage de référence, et adapte tenue/décor tout en gardant la même identité.\n      - Chaque \"voice_over\" fait 10 mots maximum et raconte la partie correspondante de l'histoire.\n    example_output: |\n      {\n        \"scenes\": [\n          { \"scene\": 1, \"prompt\": \"...\", \"voice_over\": \"...\" },\n          { \"scene\": 2, \"prompt\": \"...\", \"voice_over\": \"...\" }\n        ]\n      }\n\n  🇹 T – Outils :\n    Tu as accès aux outils suivants :\n      - Think Tool : à utiliser SYSTÉMATIQUEMENT avant de répondre, pour construire l'arc narratif complet, définir la personnalité et l'apparence FIXE du personnage de référence, planifier l'évolution de ses tenues et décors scène par scène, et vérifier que chaque voix off respecte la limite de 10 mots et s'enchaîne de façon cohérente."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        112,
+        -240
+      ],
+      "id": "9acdb0ff-6b92-425d-95fa-25521aed05a5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "523d73e2-55a9-4c12-a4b6-69e09cce3006",
+              "name": "Thème",
+              "value": "Histoire de chevalier",
+              "type": "string"
+            },
+            {
+              "id": "8822953d-05d9-4b7b-a6a6-68a7c9d7fba3",
+              "name": "Nombre scène",
+              "value": "12",
+              "type": "string"
+            },
+            {
+              "id": "517dd0ab-48a9-46cb-b931-9235eb9240d1",
+              "name": "personnage principal",
+              "value": "https://tempfile.aiquickdraw.com/vnp/bf76953394d94336eb6b32a7fbe3eeb6_1783220338.jpeg",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        -240
+      ],
+      "id": "82df6ab7-628d-4c3f-9249-76ac0abf5100",
+      "name": "Data"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -48
+      ],
+      "id": "433235c0-6bb3-4949-9e34-987498bf9435",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        -48
+      ],
+      "id": "12b993f2-f8ac-44ba-b748-219e12d7a918",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"scenes\": [\n    { \"scene\": 1, \"prompt\": \"...\", \"voice_over\": \"...\" },\n    { \"scene\": 2, \"prompt\": \"...\", \"voice_over\": \"...\" }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        -48
+      ],
+      "id": "17b81b06-082a-4f58-9fc3-ee508bc5c896",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "VOTRE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "2-5",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "prompt_image": "={{ $json.prompt }}",
+            "status": "PROMPT",
+            "voix_off": "={{ $json.voice_over }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prompt_image",
+              "displayName": "prompt_image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "voix_off",
+              "displayName": "voix_off",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lien_images",
+              "displayName": "lien_images",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "lien_video",
+              "displayName": "lien_video",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        -240
+      ],
+      "id": "88d81d1d-c993-471a-a984-e2a1547e66ae",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wNZYsUfk32mItiNB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -240
+      ],
+      "id": "548252bb-9848-4718-a010-f96c42426171",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "VOTRE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "2-5",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/VOTRE_SHEET_ID/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "PROMPT"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": false
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        -240
+      ],
+      "id": "0b9c085c-6149-4519-868e-8516abb8f9e6",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wNZYsUfk32mItiNB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-2-image-to-image\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($json.prompt_image) }},\n    \"input_urls\": [\n      \"{{ $('Data').item.json['personnage principal'] }}\"\n    ],\n    \"aspect_ratio\": \"16:9\",\n    \"resolution\": \"4K\"\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        976,
+        -352
+      ],
+      "id": "768864ea-6b28-4ea6-a8e4-6bbadccdd006",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        -352
+      ],
+      "id": "a500d736-cab4-4ce3-9f15-1b52929c6380",
+      "name": "Wait",
+      "webhookId": "8c784c8d-a656-46fb-97d3-a78aead46021"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1296,
+        -352
+      ],
+      "id": "39657395-c3be-481c-9e9b-f2b2a43bbdf6",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1840,
+        -352
+      ],
+      "id": "7dcffa2c-73d0-49f0-b92f-34846b64dcae",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1664,
+        -352
+      ],
+      "id": "06b9d5bb-009d-405c-8ce6-c7b2740f3320",
+      "name": "Wait1",
+      "webhookId": "65fbd387-9770-42d0-8417-98a8bdc48c71"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/images-to-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"images\": [\n    {\n      \"url\": \"{{ JSON.parse($json.data.resultJson).resultUrls[0] }}\",\n      \"frames\": 120\n    }\n  ],\n  \"fps\": 24\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1488,
+        -352
+      ],
+      "id": "c440c73b-39e0-431a-b845-241c3fa9cb93",
+      "name": "HTTP Request3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/inworld-tts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": {{ JSON.stringify($json.voix_off) }},\n  \"voice\": \"Hélène (fr)\",\n  \"sample_rate_hertz\": 48000\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1232,
+        -80
+      ],
+      "id": "49b13692-4ace-4704-b76f-4b5a3efad5f0",
+      "name": "HTTP Request4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1376,
+        -80
+      ],
+      "id": "4fd650fc-56ab-44ba-a501-fdea8debc91d",
+      "name": "Wait2",
+      "webhookId": "02bd62cc-ed92-4a6d-86cc-9de0df96800e"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1520,
+        -80
+      ],
+      "id": "8b6e56ed-3be0-47d2-af54-c59e78d80584",
+      "name": "HTTP Request5",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2016,
+        -208
+      ],
+      "id": "7d2fd85e-732e-43c4-a8a9-651e108cbb6c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-audio-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video.url }}\",\n  \"audio_url\": \"{{ $json.audio.url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2224,
+        -208
+      ],
+      "id": "800cab1d-3391-4322-b419-d4666cfc6e0f",
+      "name": "HTTP Request6",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 90
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2400,
+        -208
+      ],
+      "id": "e871127c-0483-4ed1-8bd7-9c28f538f4a4",
+      "name": "Wait3",
+      "webhookId": "992e3cee-fb24-49a6-ae9a-ba81ac96f756"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2576,
+        -208
+      ],
+      "id": "da013d93-abbe-4906-8bd1-8d7d0b760442",
+      "name": "HTTP Request7",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "video.url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        -208
+      ],
+      "id": "c91f8bd6-3d14-4116-b9b0-47c66c8681e9",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3248,
+        -208
+      ],
+      "id": "0c7ecdb3-3e0c-4c24-a550-1ddebeca2d79",
+      "name": "HTTP Request8",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3088,
+        -208
+      ],
+      "id": "68283f08-9717-41d2-a7ca-32ad77340a6e",
+      "name": "Wait4",
+      "webhookId": "65fbd387-9770-42d0-8417-98a8bdc48c71"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": {{ JSON.stringify($json.url) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2928,
+        -208
+      ],
+      "id": "d9acf780-1a26-4cf8-885d-7e0598ccf020",
+      "name": "HTTP Request9",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "START": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request9": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2a7a262c-6ea6-4f34-a671-288584fa4b68",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "e51WDwxDKA3aIXpf",
+  "tags": []
+}

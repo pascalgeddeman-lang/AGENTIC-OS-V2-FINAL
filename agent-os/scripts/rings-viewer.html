@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Graphify Rings</title>
+<style>
+  /* Palette alignée sur app.css (console sombre + orange de marque). */
+  :root{
+    --bg:oklch(0.11 0.008 255); --panel:oklch(0.185 0.01 255); --surface:oklch(0.225 0.012 255);
+    --border:oklch(0.31 0.012 255); --border-soft:oklch(0.25 0.01 255);
+    --ink:oklch(0.94 0.006 80); --muted:oklch(0.62 0.012 255);
+    --accent:oklch(0.68 0.185 38); --accent-hi:oklch(0.74 0.185 42);
+    --font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"JetBrains Mono","Cascadia Code",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font);overflow:hidden;display:flex;flex-direction:column}
+
+  .bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--panel);
+       border-bottom:1px solid var(--border-soft);flex:none;flex-wrap:wrap}
+  .bar b{font-size:13px;letter-spacing:.2px}
+  .count{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .grow{flex:1}
+  input[type=search],select{background:var(--surface);color:var(--ink);border:1px solid var(--border);
+       border-radius:8px;padding:5px 9px;font:inherit;font-size:12px;outline:none}
+  input[type=search]:focus,select:focus{border-color:var(--accent)}
+  input[type=search]{width:170px}
+  .sliderRow{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+  .sliderRow input[type=range]{width:78px;accent-color:var(--accent)}
+  .sliderRow .val{font-family:var(--mono);color:var(--ink)}
+  .btn{background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:8px;
+       padding:5px 10px;font:inherit;font-size:12px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .btn.on{background:oklch(0.68 0.185 38 / .16);border-color:var(--accent);color:var(--accent-hi)}
+
+  .stage{position:relative;flex:1;min-height:0}
+  canvas{display:block;width:100%;height:100%;cursor:grab}
+  canvas.drag{cursor:grabbing}
+
+  .panel{position:absolute;top:12px;right:12px;width:310px;max-height:calc(100% - 24px);overflow:auto;
+         background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;
+         box-shadow:0 18px 44px rgb(0 0 0 / .45);display:none}
+  .panel.open{display:block}
+  .panel h2{margin:0 0 4px;font-size:14px;line-height:1.35}
+  .panel .path{font-family:var(--mono);font-size:10px;color:var(--muted);word-break:break-all;margin-bottom:9px}
+  .panel .excerpt{font-size:12px;line-height:1.55;color:oklch(0.78 0.01 255);white-space:pre-wrap;margin:9px 0}
+  .panel .close{position:absolute;top:9px;right:10px;background:none;border:none;color:var(--muted);
+         font-size:17px;cursor:pointer;line-height:1}
+  .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .tag{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:5px;
+       background:oklch(0.68 0.185 38 / .13);color:var(--accent-hi)}
+  .panel h3{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);
+       margin:13px 0 5px;font-weight:700}
+  .panel ul{margin:0;padding-left:15px;font-size:12px;line-height:1.7}
+  .panel a{color:var(--accent-hi);cursor:pointer;text-decoration:none}
+  .panel a:hover{text-decoration:underline}
+
+  .legend{position:absolute;left:12px;bottom:12px;background:oklch(0.185 0.01 255 / .9);
+       border:1px solid var(--border-soft);border-radius:10px;padding:8px 11px;font-size:11px;
+       display:flex;flex-direction:column;gap:4px;backdrop-filter:blur(6px)}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+  .hint{position:absolute;left:12px;top:12px;font-size:11px;color:var(--muted)}
+  .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+       text-align:center;padding:30px;color:var(--muted);font-size:13px;line-height:1.6}
+</style>
+</head>
+<body>
+  <div class="bar">
+    <b>Graphify Rings</b>
+    <span class="count" id="count">…</span>
+    <span class="grow"></span>
+    <input type="search" id="q" placeholder="Chercher une note…">
+    <select id="tag"><option value="">Tous les tags</option></select>
+    <div class="sliderRow"><span>Nœuds</span><input type="range" id="sz" min="60" max="220" value="100"><span class="val" id="szv">100</span></div>
+    <div class="sliderRow"><span>Écart</span><input type="range" id="gap" min="60" max="240" value="130"><span class="val" id="gapv">130</span></div>
+    <button class="btn on" id="lbl">Étiquettes</button>
+    <button class="btn" id="fit">Recentrer</button>
+  </div>
+
+  <div class="stage">
+    <canvas id="cv"></canvas>
+    <div class="hint">Molette : zoom · Glisser : déplacer · Clic sur un nœud : détail</div>
+    <div class="legend" id="legend"></div>
+    <div class="panel" id="panel">
+      <button class="close" id="pclose">×</button>
+      <h2 id="ptitle"></h2>
+      <div class="path" id="ppath"></div>
+      <div class="tags" id="ptags"></div>
+      <div class="excerpt" id="pexc"></div>
+      <div id="plinks"></div>
+    </div>
+  </div>
+
+<script>
+"use strict";
+// Intégré dans la page Second Cerveau, l'entête de la plateforme dit déjà le coffre
+// et la volumétrie : on n'affiche le titre du viewer qu'en consultation autonome.
+if (window.self !== window.top) {
+  document.querySelector(".bar b").style.display = "none";
+  document.getElementById("count").style.display = "none";
+}
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const state = {
+  nodes: [], links: [], byId: new Map(),
+  scale: 1, ox: 0, oy: 0,          // transformation vue
+  hover: null, sel: null,
+  size: 1.0, gap: 130, labels: true,
+  q: "", tag: "",
+};
+
+// Palette par dossier de premier niveau.
+const FOLDER_COLORS = [
+  ["#e8833a", "Notes"], ["#4da3ff", "Sources"], ["#39c07f", "Index"],
+  ["#b98cf0", "—"], ["#f0c24b", "—"], ["#e2607a", "—"],
+];
+const folderColor = new Map();
+function colorOf(n) {
+  if (n.missing) return "#6b7280";
+  return folderColor.get(n.folder) || "#9aa4b2";
+}
+
+/* ── Chargement ───────────────────────────────────────────────── */
+fetch("graph.json?ts=" + Date.now())
+  .then((r) => { if (!r.ok) throw new Error("graph.json introuvable (" + r.status + ")"); return r.json(); })
+  .then(boot)
+  .catch((e) => {
+    document.querySelector(".stage").insertAdjacentHTML("beforeend",
+      '<div class="empty">Graphe indisponible.<br>' + e.message +
+      "<br><br>Lance <code>node agent-os/scripts/build-graph.js</code> pour (re)générer le graphe.</div>");
+  });
+
+function boot(g) {
+  state.nodes = g.nodes;
+  state.links = g.links;
+  state.nodes.forEach((n) => state.byId.set(n.id, n));
+
+  // Couleurs par dossier, dans l'ordre d'apparition.
+  let ci = 0;
+  for (const n of state.nodes) {
+    if (n.missing) continue;
+    if (!folderColor.has(n.folder)) folderColor.set(n.folder, FOLDER_COLORS[ci++ % FOLDER_COLORS.length][0]);
+  }
+
+  // Voisinages.
+  for (const n of state.nodes) n.nb = new Set();
+  for (const l of state.links) {
+    const a = state.byId.get(l.source), b = state.byId.get(l.target);
+    if (a && b) { a.nb.add(b.id); b.nb.add(a.id); }
+  }
+  for (const n of state.nodes) n.deg = n.nb.size;
+
+  document.getElementById("count").textContent =
+    state.nodes.length + " notes · " + state.links.length + " liens";
+
+  // Filtre de tags.
+  const tags = [...new Set(state.nodes.flatMap((n) => n.tags || []))].sort();
+  const sel = document.getElementById("tag");
+  for (const t of tags) sel.insertAdjacentHTML("beforeend", '<option value="' + t + '">#' + t + "</option>");
+
+  // Légende.
+  const lg = document.getElementById("legend");
+  lg.innerHTML = [...folderColor].map(([f, c]) =>
+    '<span><i style="background:' + c + '"></i>' + (f || "racine") + "</span>").join("") +
+    (state.nodes.some((n) => n.missing) ? '<span><i style="background:#6b7280"></i>lien cassé</span>' : "");
+
+  layout();
+  fit();
+  draw();
+}
+
+/* ── Layout en anneaux ────────────────────────────────────────────
+   Les notes les plus connectées occupent le centre ; chaque anneau
+   suivant accueille 6·r nœuds. Dans un anneau, l'ordre suit l'angle
+   moyen des voisins déjà placés : les liens restent courts et radiaux. */
+function layout() {
+  const order = state.nodes.slice().sort((a, b) => b.deg - a.deg || a.label.localeCompare(b.label));
+  const rings = [];
+  let i = 0, r = 0;
+  while (i < order.length) {
+    const cap = r === 0 ? 1 : 6 * r;
+    rings.push(order.slice(i, i + cap));
+    i += cap; r++;
+  }
+  rings.forEach((ring, ri) => {
+    const radius = ri * state.gap;
+    if (ri === 0) { ring.forEach((n) => { n.x = 0; n.y = 0; }); return; }
+    // Angle préféré = moyenne vectorielle des voisins déjà positionnés.
+    const pref = ring.map((n) => {
+      let sx = 0, sy = 0, k = 0;
+      for (const id of n.nb) {
+        const m = state.byId.get(id);
+        if (m && m.x !== undefined) { sx += m.x; sy += m.y; k++; }
+      }
+      return { n, a: k ? Math.atan2(sy, sx) : Math.random() * Math.PI * 2 };
+    });
+    pref.sort((a, b) => a.a - b.a);
+    pref.forEach((p, k) => {
+      const a = (k / ring.length) * Math.PI * 2;
+      p.n.x = Math.cos(a) * radius;
+      p.n.y = Math.sin(a) * radius;
+      p.n.ring = ri;
+    });
+  });
+  state.rings = rings.length;
+}
+
+function radiusOf(n) {
+  return (5 + Math.sqrt(n.deg) * 3.4) * state.size;
+}
+
+/* ── Filtrage visuel (recherche + tag) ────────────────────────── */
+function matches(n) {
+  if (state.tag && !(n.tags || []).includes(state.tag)) return false;
+  if (state.q && !n.label.toLowerCase().includes(state.q)) return false;
+  return true;
+}
+function dimmed(n) {
+  if (!state.q && !state.tag) return false;
+  if (matches(n)) return false;
+  // Un voisin direct d'un nœud trouvé reste visible, en retrait.
+  for (const id of n.nb) { const m = state.byId.get(id); if (m && matches(m)) return "near"; }
+  return true;
+}
+
+/* ── Rendu ────────────────────────────────────────────────────── */
+function resize() {
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = cv.clientWidth * dpr;
+  cv.height = cv.clientHeight * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  draw();
+}
+window.addEventListener("resize", resize);
+
+function toScreen(x, y) { return [x * state.scale + state.ox, y * state.scale + state.oy]; }
+
+function draw() {
+  const W = cv.clientWidth, H = cv.clientHeight;
+  ctx.clearRect(0, 0, W, H);
+
+  // Anneaux de repère.
+  ctx.strokeStyle = "rgba(255,255,255,.045)";
+  ctx.lineWidth = 1;
+  for (let r = 1; r < (state.rings || 0); r++) {
+    const [cx, cy] = toScreen(0, 0);
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * state.gap * state.scale, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  const focus = state.hover || state.sel;
+  // Liens.
+  for (const l of state.links) {
+    const a = state.byId.get(l.source), b = state.byId.get(l.target);
+    if (!a || !b) continue;
+    const touched = focus && (focus.id === a.id || focus.id === b.id);
+    const faded = (dimmed(a) === true && dimmed(b) === true) || (focus && !touched);
+    ctx.strokeStyle = touched ? "rgba(232,131,58,.85)" : faded ? "rgba(255,255,255,.055)" : "rgba(255,255,255,.16)";
+    ctx.lineWidth = touched ? 1.8 : 1;
+    const [ax, ay] = toScreen(a.x, a.y), [bx, by] = toScreen(b.x, b.y);
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+  }
+
+  // Nœuds.
+  for (const n of state.nodes) {
+    const [x, y] = toScreen(n.x, n.y);
+    const rad = radiusOf(n) * state.scale;
+    if (x < -80 || y < -80 || x > W + 80 || y > H + 80) continue;
+    const d = dimmed(n);
+    const near = focus && (focus.id === n.id || focus.nb.has(n.id));
+    ctx.globalAlpha = d === true ? 0.16 : d === "near" ? 0.55 : focus && !near ? 0.28 : 1;
+
+    ctx.beginPath();
+    ctx.arc(x, y, rad, 0, Math.PI * 2);
+    ctx.fillStyle = colorOf(n);
+    ctx.fill();
+    if (n.missing) { ctx.setLineDash([3, 3]); ctx.strokeStyle = "#9aa4b2"; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]); }
+    if (state.sel && state.sel.id === n.id) {
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.arc(x, y, rad + 3.5, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  // Étiquettes : passe séparée, les notes les plus connectées d'abord. Une étiquette
+  // qui recouvrirait une étiquette déjà posée est simplement omise (zoomer les révèle).
+  if (state.labels) drawLabels(W, H, focus);
+}
+
+function drawLabels(W, H, focus) {
+  const boxes = [];
+  // Le nœud focus pose son étiquette en premier, les autres par connectivité.
+  const order = state.nodes.slice().sort((a, b) =>
+    (focus ? (b.id === focus.id) - (a.id === focus.id) : 0) || b.deg - a.deg);
+  const family = getComputedStyle(document.body).fontFamily;
+  for (const n of order) {
+    const [x, y] = toScreen(n.x, n.y);
+    if (x < -80 || y < -80 || x > W + 80 || y > H + 80) continue;
+    const d = dimmed(n);
+    if (d === true) continue;
+    const near = focus && (focus.id === n.id || focus.nb.has(n.id));
+    const isFocus = focus && focus.id === n.id;
+    if (focus && !near) continue;
+    if (state.scale < 0.55 && !near) continue;
+
+    ctx.font = (near ? "600 " : "") + Math.max(10, 11 * Math.min(state.scale, 1.3)) + "px " + family;
+    const t = n.label.length > 30 ? n.label.slice(0, 29) + "…" : n.label;
+    const w = ctx.measureText(t).width;
+    const rad = radiusOf(n) * state.scale;
+    const hit = (b) => boxes.some((o) => b.l < o.r && b.r > o.l && b.t < o.b && b.b > o.t);
+    // Sous le nœud par défaut ; au-dessus si la place est déjà prise.
+    let box = null;
+    for (const top of [y + rad + 3, y - rad - 17]) {
+      const cand = { l: x - w / 2 - 3, r: x + w / 2 + 3, t: top, b: top + 14 };
+      if (isFocus || !hit(cand)) { box = cand; break; }
+    }
+    if (!box) continue;
+    const top = box.t;
+    boxes.push(box);
+
+    ctx.globalAlpha = d === "near" ? 0.6 : 1;
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.fillStyle = "rgba(0,0,0,.6)";
+    ctx.fillRect(box.l, box.t, w + 6, 14);
+    ctx.fillStyle = near ? "#f4c9a6" : "rgba(235,238,242,.86)";
+    ctx.fillText(t, x, top + 1);
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* ── Interaction ──────────────────────────────────────────────── */
+function pick(mx, my) {
+  let best = null, bd = 1e9;
+  for (const n of state.nodes) {
+    const [x, y] = toScreen(n.x, n.y);
+    const d = Math.hypot(mx - x, my - y);
+    if (d < Math.max(radiusOf(n) * state.scale + 6, 11) && d < bd) { bd = d; best = n; }
+  }
+  return best;
+}
+
+let drag = null;
+cv.addEventListener("mousedown", (e) => { drag = { x: e.offsetX, y: e.offsetY, ox: state.ox, oy: state.oy, moved: false }; cv.classList.add("drag"); });
+window.addEventListener("mouseup", (e) => {
+  if (drag && !drag.moved) {
+    const n = pick(e.offsetX, e.offsetY);
+    if (n) select(n); else closePanel();
+  }
+  drag = null; cv.classList.remove("drag");
+});
+cv.addEventListener("mousemove", (e) => {
+  if (drag) {
+    if (Math.abs(e.offsetX - drag.x) + Math.abs(e.offsetY - drag.y) > 3) drag.moved = true;
+    state.ox = drag.ox + (e.offsetX - drag.x);
+    state.oy = drag.oy + (e.offsetY - drag.y);
+    draw(); return;
+  }
+  const n = pick(e.offsetX, e.offsetY);
+  if (n !== state.hover) { state.hover = n; cv.style.cursor = n ? "pointer" : "grab"; draw(); }
+});
+cv.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  const k = Math.exp(-e.deltaY * 0.0016);
+  const ns = Math.min(4, Math.max(0.2, state.scale * k));
+  state.ox = e.offsetX - (e.offsetX - state.ox) * (ns / state.scale);
+  state.oy = e.offsetY - (e.offsetY - state.oy) * (ns / state.scale);
+  state.scale = ns; draw();
+}, { passive: false });
+
+function fit() {
+  const R = Math.max(1, (state.rings - 1) * state.gap) + 60;
+  state.scale = Math.min(cv.clientWidth, cv.clientHeight) / (R * 1.85);
+  state.ox = cv.clientWidth / 2;
+  state.oy = cv.clientHeight / 2;
+}
+
+/* ── Panneau de détail ────────────────────────────────────────── */
+function select(n) {
+  state.sel = n;
+  document.getElementById("ptitle").textContent = n.label;
+  document.getElementById("ppath").textContent = n.missing ? "lien cassé — note inexistante" : n.file;
+  document.getElementById("ptags").innerHTML = (n.tags || []).map((t) => '<span class="tag">#' + t + "</span>").join("");
+  document.getElementById("pexc").textContent = n.excerpt || "";
+  const out = [...n.nb].map((id) => state.byId.get(id)).filter(Boolean)
+    .sort((a, b) => b.deg - a.deg);
+  document.getElementById("plinks").innerHTML = out.length
+    ? "<h3>" + out.length + " note" + (out.length > 1 ? "s" : "") + " reliée" + (out.length > 1 ? "s" : "") + "</h3><ul>" +
+      out.map((m) => '<li><a data-id="' + encodeURIComponent(m.id) + '">' + m.label + "</a></li>").join("") + "</ul>"
+    : "<h3>Aucun lien</h3><p style='font-size:12px;color:var(--muted);margin:0'>Note isolée — à relier.</p>";
+  document.getElementById("panel").classList.add("open");
+  draw();
+}
+document.getElementById("plinks").addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-id]");
+  if (a) { const n = state.byId.get(decodeURIComponent(a.dataset.id)); if (n) select(n); }
+});
+function closePanel() { state.sel = null; document.getElementById("panel").classList.remove("open"); draw(); }
+document.getElementById("pclose").addEventListener("click", closePanel);
+
+/* ── Contrôles ────────────────────────────────────────────────── */
+document.getElementById("q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); draw(); });
+document.getElementById("tag").addEventListener("change", (e) => { state.tag = e.target.value; draw(); });
+document.getElementById("sz").addEventListener("input", (e) => {
+  state.size = +e.target.value / 100; document.getElementById("szv").textContent = e.target.value; draw();
+});
+document.getElementById("gap").addEventListener("input", (e) => {
+  state.gap = +e.target.value; document.getElementById("gapv").textContent = e.target.value; layout(); draw();
+});
+document.getElementById("lbl").addEventListener("click", (e) => {
+  state.labels = !state.labels; e.target.classList.toggle("on", state.labels); draw();
+});
+document.getElementById("fit").addEventListener("click", () => { fit(); draw(); });
+
+resize();
+</script>
+</body>
+</html>

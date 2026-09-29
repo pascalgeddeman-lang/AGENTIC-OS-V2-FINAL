@@ -1,0 +1,1215 @@
+{
+  "name": "[Atelier 3] Niche Linguistique #1",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crée des vidéos d'apprentissage de langue\n\nLangue : {{ $json.Langue }}\n\nThème : {{ $json['Thème'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Immersive Language Learning Video Generator\n\n  You generate immersive A1/A2 language-learning videos using simple everyday conversations.\n\n  The goal is to help beginners learn naturally through calm, realistic, easy-to-follow situations.\n\n  Videos should feel:\n  - warm\n  - calm\n  - natural\n  - immersive\n  - cinematic\n  - easy to understand\n\n  --------------------------------------------------\n  VIDEO STRUCTURE\n  --------------------------------------------------\n\n  Generate:\n  - 1 intro narration\n  - 12 scenes\n  - 1 outro narration\n\n  Each scene contains:\n  - 1 image prompt\n  - 1 dialogue between exactly 2 characters\n\n  --------------------------------------------------\n  CHARACTERS\n  --------------------------------------------------\n\n  Select:\n  - 1 random female speaker\n  - 1 random male speaker\n\n  female_speakers:\n    - Sarah\n    - Laura\n    - Charlotte\n    - Alice\n    - Matilda\n    - Jessica\n    - Lily\n\n  male_speakers:\n    - Roger\n    - Charlie\n    - George\n    - Callum\n    - River\n    - Liam\n    - Will\n    - Eric\n    - Chris\n    - Brian\n    - Daniel\n    - Bill\n\n  Rules:\n  - Keep the same two characters during the entire video\n  ❌ NEVER USE OTHER NAMES\n  - Never change their names\n  - The user provides character reference images\n  - Reference images are ONLY used for:\n    - identity\n    - facial consistency\n    - body proportions\n    - gender\n    - silhouette\n\n  Never copy:\n  - original pose\n  - original framing\n  - original background\n  - original expression\n  - original composition\n\n  Characters must appear naturally inside the scene:\n  - walking\n  - sitting\n  - talking\n  - holding objects\n  - interacting with the environment\n\n  Never create:\n  - static portrait poses\n  - character sheet layouts\n  - neutral studio poses\n\n  --------------------------------------------------\n  CULTURAL CONSISTENCY\n  --------------------------------------------------\n\n  The selected language influences:\n  - architecture\n  - clothing\n  - locations\n  - objects\n  - transportation\n  - food\n  - atmosphere\n  - lighting\n  - lifestyle\n\n  Scenes should naturally match the culture connected to the language.\n\n  Examples:\n  - American English:\n    coffee shops, bookstores, suburban streets, apartments\n\n  - British English:\n    brick streets, tea shops, rainy atmosphere, underground stations\n\n  - French:\n    cafés, bakeries, European streets, small restaurants\n\n  - Japanese:\n    train stations, convenience stores, ramen shops, city streets\n\n  - Korean:\n    cafés, subway stations, modern city interiors\n\n  - Hindi:\n    local markets, colorful streets, cafés, warm sunlight\n\n  Characters should visually fit the environment naturally.\n\n  --------------------------------------------------\n  DIALOGUE RULES\n  --------------------------------------------------\n\n  Level:\n  - strict A1\n  - strict A2\n\n  Each scene:\n  - 120 to 200 words\n  - 10 to 15 dialogue lines\n\n  Dialogue style:\n  - short sentences\n  - simple vocabulary\n  - natural spoken language\n  - realistic conversations\n  - calm and friendly tone\n\n  Avoid:\n  - advanced vocabulary\n  - difficult grammar\n  - long speeches\n  - repetitive filler\n  - robotic dialogue\n  - dramatic or intense situations\n\n  Each scene should include:\n  - a simple daily-life situation\n  - natural interaction\n  - a small progression\n  - simple emotions\n  - realistic actions\n\n  --------------------------------------------------\n  IMAGE PROMPT RULES\n  --------------------------------------------------\n\n  Each scene must contain exactly 1 image prompt.\n\n  Minimum:\n  - 150 words\n\n  Style:\n  - cinematic 3D animation\n  - warm atmosphere\n  - soft lighting\n  - immersive environment\n  - realistic staging\n  - family-friendly visual tone\n\n  The prompts should create:\n  - active scenes\n  - natural poses\n  - believable environments\n  - visual storytelling\n\n  Avoid:\n  - static portraits\n  - copied poses\n  - empty backgrounds\n  - studio photography style\n  - exaggerated expressions\n\n  Every image prompt must include:\n  - character actions\n  - environment details\n  - camera framing\n  - lighting description\n  - time of day\n  - emotional atmosphere\n  - interaction with surroundings\n\n  Every image prompt must start with:\n\n  \"Use the provided character reference images only for identity, facial consistency, body proportions, and visual continuity. Do not copy the original pose, framing, background, expression, or composition.\"\n\n  Never include:\n  - subtitles\n  - text\n  - logos\n  - buttons\n  - watermarks\n  - interface elements\n\n⚠️ Do not include any suggestive terms or words in the prompt that could be misinterpreted and blocked by an image generator.\n\n  --------------------------------------------------\n  INTRO\n  --------------------------------------------------\n\n  Intro:\n  - one narration block\n  - calm and welcoming\n  - 30 to 45 seconds\n\n  The intro should:\n  - introduce the theme\n  - introduce the atmosphere\n  - ask a simple listening question\n  - smoothly begin the story\n\n✅ Example : Welcome to English listening channel. Hello everyone. Today we're going to look at a conversation at home about calling customer support. In this video, you will follow a simple and practical story between a couple and a customer support agent. Don't worry, I will speak slowly and clearly, so please relax and enjoy the story.\n\n  --------------------------------------------------\n  OUTRO\n  --------------------------------------------------\n\n  Outro:\n  - one narration block\n  - calm and positive\n  - 30 to 45 seconds\n\n  The outro should:\n  - repeat the listening question\n  - encourage learning\n  - end with a warm atmosphere\n\n✅ Example : How was it? I hope this video helped you improve your English. By practicing English output like this, you can improve your English skills more efficiently. On this channel, I share stories in slow and easy English with small but useful tips to help you learn. I will keep uploading videos like this. So, if you enjoyed it, please subscribe to the channel. And please don't forget to like the video and leave a comment. All right, that's all for today. I hope to see you in the next video. See you next time. Bye.\n\n  --------------------------------------------------\n  OUTPUT FORMAT\n  --------------------------------------------------\n\n  Return valid JSON only.\n\n  Example structure:\n\n  {\n    \"title\": \"\",\n    \"language\": \"\",\n    \"level\": \"A1/A2\",\n\n    \"intro\": {\n      \"narration\": \"\",\n      \"image_prompt\": \"\"\n    },\n\n    \"scenes\": [\n      {\n        \"scene_number\": 1,\n        \"scene_title\": \"\",\n        \"image_prompt\": \"\",\n        \"dialogue\": [\n          {\n            \"speaker\": \"\",\n            \"line\": \"\"\n          }\n        ]\n      }\n    ],\n\n    \"outro\": {\n      \"narration\": \"\",\n      \"image_prompt\": \"\"\n    }\n  }\n\n  --------------------------------------------------\n  TOOL\n  --------------------------------------------------\n\n  Think Tool:\n  Use step-by-step reasoning before generating:\n  - scene progression\n  - dialogue\n  - emotional flow\n  - visual staging\n  - image prompts"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2768,
+        1424
+      ],
+      "id": "f3aac893-c77d-4efa-9729-842c1960b574",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5.4-nano",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        1584
+      ],
+      "id": "d1dcbd42-9dbd-421b-8495-943b4d9d67e4",
+      "name": "OpenRouter Chat Model"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        2832,
+        1648
+      ],
+      "id": "840856e1-ec55-4300-bf6d-b6e789023b4c",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n      \"title\": \"A Quiet Evening at the Cafe\",\n      \"language\": \"English\",\n      \"level\": \"A1/A2\",\n\n      \"intro\": {\n        \"narration\": \"Welcome everyone. Today we will follow two friends during a quiet evening at a small cafe near the station...\",\n        \"image_prompt\": \"...\"\n      },\n\n      \"scenes\": [\n        {\n          \"scene_number\": 1,\n          \"scene_title\": \"Arriving at the Cafe\",\n          \"image_prompt\": \"...\",\n          \"dialogue\": [\n            {\n              \"speaker\": \"Sarah\",\n              \"line\": \"It feels colder today.\"\n            },\n            {\n              \"speaker\": \"Daniel\",\n              \"line\": \"Yes, but the cafe looks warm inside.\"\n            }\n          ]\n        }\n      ],\n\n      \"outro\": {\n        \"narration\": \"Thank you for listening today. We hope this small story helped you practice English in a calm and natural way...\",\n        \"image_prompt\": \"...\"\n      }\n    }",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2928,
+        1584
+      ],
+      "id": "e3984ce6-ddcc-4fe9-8045-44cdfc48b34a",
+      "name": "Structured Output Parser",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        1424
+      ],
+      "id": "7e731900-60fe-4a4d-8317-ce95eb62a308",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = [];\n\nconst maleVoices = [\n  \"Callum\",\n  \"Roger\",\n  \"Charlie\",\n  \"George\",\n  \"River\",\n  \"Liam\",\n  \"Will\",\n  \"Eric\",\n  \"Chris\",\n  \"Brian\",\n  \"Daniel\",\n  \"Bill\"\n];\n\n// Récupère l'output complet de l'agent IA\nconst agentData = $('AI Agent').first().json;\n\n// Selon ta structure, l'output peut être directement dans agentData.output\nconst fullOutput = agentData.output || agentData;\n\nconst intro = fullOutput.intro;\nconst outro = fullOutput.outro;\n\n// Les scènes viennent des items splittés\nconst scenes = items.map(item => item.json);\n\n// Récupère les speakers déjà utilisés\nconst usedSpeakers = new Set();\n\nfor (const scene of scenes) {\n  if (!Array.isArray(scene.dialogue)) continue;\n\n  for (const dialogue of scene.dialogue) {\n    usedSpeakers.add(dialogue.speaker);\n  }\n}\n\n// Choisit une voix narrateur masculine non utilisée\nconst narratorVoice =\n  maleVoices.find(voice => !usedSpeakers.has(voice)) || \"Callum\";\n\n// INTRO\nif (intro?.narration) {\n  output.push({\n    json: {\n      type: \"intro\",\n      inputs: [\n        {\n          text: Array.isArray(intro.narration)\n            ? intro.narration.join(\" \")\n            : intro.narration,\n          voice: narratorVoice,\n        },\n      ],\n    },\n  });\n}\n\n// SCÈNES\nfor (const scene of scenes) {\n  if (!Array.isArray(scene.dialogue)) continue;\n\n  output.push({\n    json: {\n      type: \"scene\",\n      scene_number: scene.scene_number,\n      scene_title: scene.scene_title,\n      inputs: scene.dialogue.map(dialogue => ({\n        text: dialogue.line,\n        voice: dialogue.speaker,\n      })),\n    },\n  });\n}\n\n// OUTRO\nif (outro?.narration) {\n  output.push({\n    json: {\n      type: \"outro\",\n      inputs: [\n        {\n          text: Array.isArray(outro.narration)\n            ? outro.narration.join(\" \")\n            : outro.narration,\n          voice: narratorVoice,\n        },\n      ],\n    },\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3424,
+        1344
+      ],
+      "id": "6ee7591e-76aa-4869-8459-db27af69c5d7",
+      "name": "Audios"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/elevenlabs/text-to-dialogue/eleven-v3",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ inputs: $json.inputs }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3536,
+        1344
+      ],
+      "id": "71e20310-0c27-4dfc-956e-ae27885a0efc",
+      "name": "11Lab Dialogues",
+      "executeOnce": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RWdbBA71QgrYQFYH",
+          "name": "Bot Whatsapp"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3760,
+        1344
+      ],
+      "id": "60ac89f4-a3b2-4366-8bce-9ec24621669d",
+      "name": "GET Dialogues",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RWdbBA71QgrYQFYH",
+          "name": "Bot Whatsapp"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3648,
+        1344
+      ],
+      "id": "85707bc0-cea3-4541-b3d8-beb8e3c179f5",
+      "name": "2min",
+      "webhookId": "745fff99-c9bf-46f6-a36a-ffedb1673850"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9f543776-16a6-4b87-9ef7-ba12574c9bce",
+              "name": "Langue",
+              "value": "Anglais",
+              "type": "string"
+            },
+            {
+              "id": "84e447f9-6725-4328-87fe-5e10b2f4bee3",
+              "name": "Thème",
+              "value": "Aéroport",
+              "type": "string"
+            },
+            {
+              "id": "fdf4ce1e-ae72-4f51-af67-c6d7e799cfad",
+              "name": "image_personnages",
+              "value": "https://drive.google.com/uc?export=download&id=1b-bPtgt2ydNiwoRrhaI5eUXKfVVaxKyI",
+              "type": "string"
+            },
+            {
+              "id": "ea160139-14cd-4959-bd25-9619288fe243",
+              "name": "image_host",
+              "value": "https://drive.google.com/uc?export=download&id=1OxDRgTyL4EA2dHlAMEjJqtFsaLrw3D9u",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2288,
+        1424
+      ],
+      "id": "ef6d12f5-06f9-4faf-b7f9-11701ac0f56f",
+      "name": "DATA DEPART"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/metadata",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"media_url\": \"{{ $json.audio.url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3936,
+        1344
+      ],
+      "id": "4ad5bfe7-3533-478e-9202-f57f7a17c5a1",
+      "name": "Metadata",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4160,
+        1344
+      ],
+      "id": "0b7f9fe9-281c-4a11-9d3f-38de49089e8e",
+      "name": "GET Metadata",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RWdbBA71QgrYQFYH",
+          "name": "Bot Whatsapp"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4048,
+        1344
+      ],
+      "id": "d64c3022-a652-441f-b679-a91c011c18f7",
+      "name": "30s",
+      "webhookId": "745fff99-c9bf-46f6-a36a-ffedb1673850"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-2-text-to-image\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n  \"prompt\": {{ JSON.stringify($json.image_prompt) }},\n  \"input_urls\": [\n            \"{{ $('DATA DEPART').item.json.image_personnages }}\"\n        ],\n    \"aspect_ratio\": \"16:9\"\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3440,
+        1520
+      ],
+      "id": "a0c3cc21-20c9-4b45-ba08-b6fcc2eaab0c",
+      "name": "Images GPT",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RWdbBA71QgrYQFYH",
+          "name": "Bot Whatsapp"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 6,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3648,
+        1520
+      ],
+      "id": "49fe92da-22be-4ed2-8c3c-0ef94f470565",
+      "name": "Wait",
+      "webhookId": "b257301c-842f-4148-a447-444bdc3d99d2"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3888,
+        1520
+      ],
+      "id": "edf1779f-d5fa-4f31-be2e-cebd456643f9",
+      "name": "GPT GET",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RWdbBA71QgrYQFYH",
+          "name": "Bot Whatsapp"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4416,
+        1408
+      ],
+      "id": "90503786-3c40-4deb-ade8-8dfde4370eb9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const imageHost = $('DATA DEPART').first().json.image_host;\n\nconst output = [];\n\n// Host au début\noutput.push({\n  json: {\n    image: imageHost,\n  },\n});\n\n// Images des scènes\nfor (const item of items) {\n  const data = item.json.data;\n\n  if (!data?.resultJson) continue;\n\n  const parsedResult =\n    typeof data.resultJson === \"string\"\n      ? JSON.parse(data.resultJson)\n      : data.resultJson;\n\n  const resultUrls = parsedResult.resultUrls || [];\n\n  for (const url of resultUrls) {\n    output.push({\n      json: {\n        image: url,\n      },\n    });\n  }\n}\n\n// Host à la fin\noutput.push({\n  json: {\n    image: imageHost,\n  },\n});\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4128,
+        1520
+      ],
+      "id": "8634536d-4fb9-46c8-897e-713bb551558d",
+      "name": "Images"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/images-to-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"images\": [\n    {\n      \"frames\": {{ Math.ceil(Number($json.media.duration) * 24) }},\n      \"url\": \"{{ $json.image }}\"\n    }\n  ],\n  \"fps\": 24\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4592,
+        1408
+      ],
+      "id": "a5e92943-c376-41ee-b3ac-1a394c4ea723",
+      "name": "Image to Video"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4704,
+        1408
+      ],
+      "id": "34269b8c-1750-4b49-9ba7-bca2495bdd7b",
+      "name": "30sec",
+      "webhookId": "e26d38ee-54ba-4394-99de-956540f5a8b4"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4816,
+        1408
+      ],
+      "id": "fda65839-1f74-4c45-b057-4fca4efdb5b7",
+      "name": "Mp4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-audio-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video.url }}\",\n  \"audio_url\": \"{{ $('Merge').item.json.media.url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5424,
+        1504
+      ],
+      "id": "4c583fb6-c0f8-49d3-b04a-169b8b1a1bc0",
+      "name": "Merge Audio/Video"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5680,
+        1504
+      ],
+      "id": "ac8ab4c4-879d-4879-9f22-48ed7428065f",
+      "name": "Get Merge"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        6512,
+        1408
+      ],
+      "id": "036bc377-c503-438d-b14a-95e9fffee81b",
+      "name": "Get Merge1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": {{ JSON.stringify($json.url) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        6288,
+        1408
+      ],
+      "id": "9992c815-514a-4fe7-9070-1356669d2d7f",
+      "name": "Merge Videos"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "video.url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        6064,
+        1408
+      ],
+      "id": "4ebb2c60-5d52-42ff-8552-aa04b1e781fa",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        6400,
+        1408
+      ],
+      "id": "691641ad-7470-481a-84c9-322cab5e242e",
+      "name": "45s",
+      "webhookId": "6d26e6c0-7f58-417d-a1ab-910ee05cefb7"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5552,
+        1504
+      ],
+      "id": "2d933900-dc07-4a18-8f15-700ac4662fe2",
+      "name": "Wait 60s",
+      "webhookId": "6d26e6c0-7f58-417d-a1ab-910ee05cefb7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/veed/subtitles",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video.url }}\",\n  \"preset\": \"flex\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        6640,
+        1408
+      ],
+      "id": "98653886-6268-4192-beb7-3f3d6783eec4",
+      "name": "Veed Subtitle"
+    },
+    {
+      "parameters": {
+        "amount": 180
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        6752,
+        1408
+      ],
+      "id": "e695e98e-44ba-48e5-b90b-e8835a29c9fd",
+      "name": "3min",
+      "webhookId": "6d26e6c0-7f58-417d-a1ab-910ee05cefb7"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        6864,
+        1408
+      ],
+      "id": "95623366-0453-41be-b7c9-2f0bdecdd183",
+      "name": "Get Subtitle"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5296,
+        1328
+      ],
+      "id": "12c32afd-90ab-4d9f-96a9-8ca21b98e17e",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "maxItems": 13,
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        5280,
+        1504
+      ],
+      "id": "83221d56-fa48-4e77-906c-9959d3c7537f",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/veed/lipsync",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_url\": \"{{ $('Merge').first().json.media.url }}\",\n  \"video_url\": \"{{ $json.video.url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5424,
+        1328
+      ],
+      "id": "31e65b48-78d3-4d50-ad5e-86cdb06b2c1c",
+      "name": "Lipsync"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5680,
+        1328
+      ],
+      "id": "2e899d29-0e90-40a2-9153-fb6e977e25c7",
+      "name": "Get Lypsinc"
+    },
+    {
+      "parameters": {
+        "amount": 120
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5552,
+        1328
+      ],
+      "id": "ddafb985-6648-42f9-87f8-856c43628fcb",
+      "name": "Wait 2m",
+      "webhookId": "6d26e6c0-7f58-417d-a1ab-910ee05cefb7"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        1424
+      ],
+      "id": "0e7db2f1-504d-4eb7-ba78-d3be52ecdf58",
+      "name": "START"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5952,
+        1408
+      ],
+      "id": "3933007f-a385-4104-b14c-e3e938fe4a71",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fb4bc107-127f-41c8-8afa-444d8daf124e",
+              "name": "VIDEO",
+              "value": "={{ $json.video.url }}",
+              "type": "string"
+            },
+            {
+              "id": "013cf335-8cc4-4d04-ac1c-5761ff218939",
+              "name": "IMAGE",
+              "value": "={{ JSON.parse($('GPT GET').first().json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6976,
+        1408
+      ],
+      "id": "a35d74be-78db-4605-9ad5-0a1a0af463e6",
+      "name": "PACKAGE"
+    },
+    {
+      "parameters": {
+        "content": "# INPUT",
+        "height": 672,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2064,
+        1184
+      ],
+      "typeVersion": 1,
+      "id": "3b1d3e2d-5308-4236-a668-1fd487207714",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# AGENT",
+        "height": 672,
+        "width": 608,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2656,
+        1184
+      ],
+      "typeVersion": 1,
+      "id": "3c7d66d1-cf4d-46d8-bcd2-f657743dfe15",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# CONTENU",
+        "height": 672,
+        "width": 2400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3408,
+        1168
+      ],
+      "typeVersion": 1,
+      "id": "77c9b6b9-4cd9-406e-9dc8-a98f51d89183",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# MONTAGE",
+        "height": 672,
+        "width": 1280,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        5872,
+        1168
+      ],
+      "typeVersion": 1,
+      "id": "2ca58f2b-da7d-48b5-a2d4-d90a44969768",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Audios",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Images GPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audios": {
+      "main": [
+        [
+          {
+            "node": "11Lab Dialogues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11Lab Dialogues": {
+      "main": [
+        [
+          {
+            "node": "2min",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Dialogues": {
+      "main": [
+        [
+          {
+            "node": "Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2min": {
+      "main": [
+        [
+          {
+            "node": "GET Dialogues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DATA DEPART": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metadata": {
+      "main": [
+        [
+          {
+            "node": "30s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Metadata": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "30s": {
+      "main": [
+        [
+          {
+            "node": "GET Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Images GPT": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "GPT GET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT GET": {
+      "main": [
+        [
+          {
+            "node": "Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Image to Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Images": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Image to Video": {
+      "main": [
+        [
+          {
+            "node": "30sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "30sec": {
+      "main": [
+        [
+          {
+            "node": "Mp4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mp4": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Audio/Video": {
+      "main": [
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Merge1": {
+      "main": [
+        [
+          {
+            "node": "Veed Subtitle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Videos": {
+      "main": [
+        [
+          {
+            "node": "45s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "45s": {
+      "main": [
+        [
+          {
+            "node": "Get Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60s": {
+      "main": [
+        [
+          {
+            "node": "Get Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veed Subtitle": {
+      "main": [
+        [
+          {
+            "node": "3min",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3min": {
+      "main": [
+        [
+          {
+            "node": "Get Subtitle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Subtitle": {
+      "main": [
+        [
+          {
+            "node": "PACKAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Lipsync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Merge Audio/Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lipsync": {
+      "main": [
+        [
+          {
+            "node": "Wait 2m",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lypsinc": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2m": {
+      "main": [
+        [
+          {
+            "node": "Get Lypsinc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "START": {
+      "main": [
+        [
+          {
+            "node": "DATA DEPART",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bc1450a9-fc17-4850-b4d0-c5c5a4132fa2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "85c975e0a3d0070ca7604774fece553c043517f6b741e163da1a63d60dfca3c8"
+  },
+  "nodeGroups": [],
+  "id": "DeAbllVRNFCe5BP7",
+  "tags": []
+}

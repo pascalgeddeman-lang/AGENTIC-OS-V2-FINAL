@@ -1,0 +1,1167 @@
+{
+  "name": "3-8 Workflow VSCode - Histoire Vidéo — Images, Animation & Voix Off",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7c1f0a3e-5b2d-4e8a-9c47-01aa62b30d11",
+      "name": "START"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3f61c02-8d4b-4b7e-9f21-02bb73c41e22",
+              "name": "Thème",
+              "value": "Un petit robot qui découvre la forêt",
+              "type": "string"
+            },
+            {
+              "id": "b8e72d13-9e5c-4c8f-8a32-03cc84d52f33",
+              "name": "Nombre scène",
+              "value": "5",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        0
+      ],
+      "id": "c9f83e24-af6d-4d9a-9b43-04dd95e63a44",
+      "name": "Data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Je veux que tu me crées une histoire sur le thème : {{ $json['Thème'] }}\nNombre de scènes attendues : {{ $json['Nombre scène'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Générateur d'Histoire Vidéo (Image + Animation + Voix Off par scène)\n\n  🅰️ A – Demande :\n    À partir du THÈME et du NOMBRE DE SCÈNES fournis dans le message utilisateur,\n    imagine UNE histoire cohérente et captivante découpée en scènes consécutives.\n    Pour CHAQUE scène, produis : (1) un prompt d'image détaillé, (2) un prompt vidéo\n    décrivant l'animation de cette image, (3) un texte de voix off qui raconte cette partie de l'histoire.\n    Génère EXACTEMENT N scènes (N = nombre de scènes indiqué dans l'user message). Ni plus, ni moins.\n\n  🇬 G – Orientation :\n    role: Réalisateur et conteur spécialisé dans les vidéos narratives générées par IA\n    tone: immersif, chaleureux, cinématographique\n    output_count: N (= nombre de scènes fourni dans le message utilisateur)\n    langues:\n      - image_prompt : ANGLAIS (meilleur rendu sur les générateurs d'images)\n      - video_prompt : ANGLAIS\n      - voice_over : FRANÇAIS\n    character_limit:\n      - image_prompt : MINIMUM 250 caractères, riche et précis\n      - video_prompt : 300 à 800 caractères\n      - voice_over : STRICTEMENT 15 à 20 mots (compte les mots, pas les caractères), lisible en moins de 10 secondes\n\n    image_prompt_rules:\n      - Décrire une image fixe ultra-détaillée : sujet, action, décor, lumière, ambiance, couleurs, angle de vue.\n      - Style visuel OBLIGATOIRE à rappeler mot pour mot dans CHAQUE image_prompt : « cinematic, highly detailed, HD, 4K, high quality ».\n      - COHÉRENCE totale d'une scène à l'autre : mêmes personnages (apparence, vêtements, couleurs), même univers, même palette, même style visuel.\n\n    video_prompt_rules:\n      - Décrire l'ANIMATION de l'image de la scène : une séquence continue d'environ 10 secondes.\n      - Préciser : mouvement de caméra (lent, fluide, cinématographique), action des personnages, éléments animés du décor (vent, lumière, particules, eau…).\n      - Plan UNIQUE et continu : pas de cut, pas de changement de décor, pas de multi-shot.\n      - ⛔ NE JAMAIS inclure de voix off, de dialogue ou de narration dans le video_prompt : la voix off est générée SÉPARÉMENT. Inclure mot pour mot dans chaque video_prompt : « no speech, no voice, no dialogue, no text on screen ».\n\n    voice_over_rules:\n      - Chaque voix off fait STRICTEMENT entre 15 et 20 mots. Jamais moins, jamais plus.\n      - Elle raconte la partie de l'histoire correspondant à la scène, phrase naturelle et fluide à lire à voix haute.\n      - Les voix off s'enchaînent comme UNE seule histoire continue : scène 1 = introduction, scènes du milieu = développement, dernière scène = conclusion.\n\n    constraints:\n      - L'histoire forme UNE progression narrative unique et cohérente sur l'ensemble des N scènes.\n      - Concordance obligatoire : image_prompt ↔ video_prompt ↔ voice_over décrivent LA MÊME scène.\n      - Interdit : contenu effrayant, violent ou inadapté ; texte ou lettres dans l'image ; prompts vagues ou génériques.\n\n  🇪 E – Exemples :\n    good_examples:   # 🟢\n      - image_prompt: \"A small curious silver robot with round blue glowing eyes standing at the edge of a misty enchanted forest at sunrise, golden light rays filtering through tall pine trees, wildflowers and glowing mushrooms in the foreground, warm pastel color palette, three-quarter wide shot, cinematic, highly detailed, HD, 4K, high quality.\"\n        video_prompt: \"Slow cinematic push-in on the small silver robot as it takes its first careful steps into the misty forest. Golden sunrise rays shift gently through the pine branches, fog drifts low across the ground, fireflies float around the glowing mushrooms. The robot turns its head slowly, blue eyes lighting up with wonder. Single continuous shot, smooth camera movement, about 10 seconds. No speech, no voice, no dialogue, no text on screen.\"\n        voice_over: \"Ce matin-là, un petit robot curieux s'aventura pour la toute première fois dans la grande forêt mystérieuse.\"   # 18 mots\n    bad_examples:    # 🔴\n      - image_prompt: \"A robot in a forest.\"   # ❌ trop court, vague, aucun style ni détail\n        video_prompt: \"The robot walks and a narrator says : Welcome to the forest!\"   # ❌ contient une narration → interdit, la voix off est générée séparément\n        voice_over: \"Il marche.\"   # ❌ bien trop court (moins de 15 mots), ne raconte rien\n\n  🇳 N – Format :\n    format: JSON\n    rules:\n      - Réponds UNIQUEMENT avec du JSON valide et parsable.\n      - N'ajoute AUCUN texte, préambule, commentaire ou balise ``` autour du JSON.\n      - Le tableau \"scenes\" contient EXACTEMENT N éléments (N = nombre de scènes demandé).\n      - Chaque élément contient : scene (entier), image_prompt (string, anglais), video_prompt (string, anglais), voice_over (string, français, 15-20 mots).\n    example_output: |\n      {\n        \"scenes\": [\n          { \"scene\": 1, \"image_prompt\": \"...\", \"video_prompt\": \"...\", \"voice_over\": \"...\" },\n          { \"scene\": 2, \"image_prompt\": \"...\", \"video_prompt\": \"...\", \"voice_over\": \"...\" }\n        ]\n      }\n\n  🇹 T – Outils :\n    Tu as accès aux outils suivants :\n      - Think Tool : à utiliser SYSTÉMATIQUEMENT avant de répondre, pour (1) lire N dans l'user message, (2) poser l'arc narratif complet des N scènes, (3) fixer l'apparence FIXE des personnages et le style visuel commun, (4) vérifier la continuité scène par scène, le compte EXACT de scènes, la limite 15-20 mots de chaque voix off, et l'absence totale de narration dans les video_prompt."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        -16
+      ],
+      "id": "d0a94f35-b07e-4eab-8c54-05ee06f74b55",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        320,
+        208
+      ],
+      "id": "e1ba5046-c18f-4fbc-9d65-06ff17085c66",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        208
+      ],
+      "id": "f2cb6157-d29a-4a0d-8e76-07aa28196c77",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"scenes\": [\n    {\n      \"scene\": 1,\n      \"image_prompt\": \"string\",\n      \"video_prompt\": \"string\",\n      \"voice_over\": \"string\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        208
+      ],
+      "id": "03dc7268-e3ab-4b1e-9f87-08bb39207d88",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "14ed8379-f4bc-4c2f-8a98-09cc40318e99",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "content": "## 🖼️ Images (Kie — GPT Image 2)",
+        "height": 80,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -256
+      ],
+      "id": "25fe948a-05cd-4d3f-8ba9-10dd51429e00",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-2-text-to-image\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($json.image_prompt) }},\n    \"aspect_ratio\": \"16:9\"\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        -160
+      ],
+      "id": "369f05ab-16de-4e40-9cba-21ee62530f11",
+      "name": "IMAGE GPT IMAGE 2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        -160
+      ],
+      "id": "47a016bc-27ef-4f51-8dcb-32ff73641022",
+      "name": "Wait Image",
+      "webhookId": "58b127cd-38f0-4062-9edc-43aa84752133"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        -160
+      ],
+      "id": "69c238de-49a1-4f62-8fdc-54bb95863244",
+      "name": "GET IMAGE",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🎬 Vidéos (Kie — Grok Imagine 1.5)",
+        "height": 80,
+        "width": 464,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -256
+      ],
+      "id": "70d349ef-50b2-4a73-9aed-65cc06974355",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"grok-imagine-video-1-5-preview\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($('Split Out').item.json.video_prompt) }},\n    \"image_urls\": [\n      \"{{ JSON.parse($json.data.resultJson).resultUrls[0] }}\"\n    ],\n    \"aspect_ratio\": \"16:9\",\n    \"resolution\": \"720p\",\n    \"duration\": 8\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1472,
+        -160
+      ],
+      "id": "81e45a00-61c3-4b84-8bfe-76dd17085466",
+      "name": "VIDEO GROK IMAGINE",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1632,
+        -160
+      ],
+      "id": "92f56b11-72d4-4c95-8caf-87ee28196577",
+      "name": "Wait Vidéo",
+      "webhookId": "a3a67c22-83e5-4da6-9dba-98ff39207688"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        -160
+      ],
+      "id": "b4a78d33-94e6-4eb7-8db0-a9aa40318799",
+      "name": "GET VIDEO",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c5b89e44-a5f7-4fc8-9ec1-b0bb51429800",
+              "name": "video_url",
+              "value": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        -160
+      ],
+      "id": "d6c90f55-b608-4ad9-8fd2-c1cc62530911",
+      "name": "Lien Vidéo"
+    },
+    {
+      "parameters": {
+        "content": "## 🎙️ Voix Off (FAL — Inworld TTS)",
+        "height": 80,
+        "width": 464,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        64
+      ],
+      "id": "e7da1066-c719-4be0-9e03-d2dd73641a22",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/inworld-tts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": {{ JSON.stringify($json.voice_over) }},\n  \"voice\": \"Hélène (fr)\",\n  \"sample_rate_hertz\": 48000\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        160
+      ],
+      "id": "f8eb2177-d82a-4c11-8f14-e3ee84752b33",
+      "name": "VOIX OFF TTS",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        160
+      ],
+      "id": "09fc3288-e93b-4d22-9025-f4ff95863c44",
+      "name": "Wait Voix Off",
+      "webhookId": "1a0d4399-fa4c-4e33-a136-05aa06974d55"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        160
+      ],
+      "id": "2b1e54aa-0b5d-4f44-b247-16bb17085e66",
+      "name": "GET AUDIO",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 📏 Metadata (durée audio)",
+        "height": 80,
+        "width": 464,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        64
+      ],
+      "id": "3c2f65bb-1c6e-4a55-8358-27cc28196f77",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/metadata",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"media_url\": \"{{ $json.audio.url }}\"\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1472,
+        160
+      ],
+      "id": "4d3076cc-2d7f-4b66-9469-38dd39207088",
+      "name": "METADATA AUDIO",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1632,
+        160
+      ],
+      "id": "5e4187dd-3e80-4c77-857a-49ee40318199",
+      "name": "Wait Metadata",
+      "webhookId": "6f5298ee-4f91-4d88-968b-50ff51429200"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        160
+      ],
+      "id": "7063a9ff-50a2-4e99-a79c-61aa62530311",
+      "name": "GET METADATA",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2176,
+        0
+      ],
+      "id": "8174ba00-61b3-4faa-b8ad-72bb73641422",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "## ✂️ Trim (vidéo → durée audio)",
+        "height": 80,
+        "width": 464,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2336,
+        -96
+      ],
+      "id": "9285cb11-72c4-4abb-89be-83cc84752533",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/workflow-utilities/trim-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video_url }}\",\n  \"start_time\": 0,\n  \"duration\": {{ $json.media.duration }}\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2368,
+        0
+      ],
+      "id": "a396dc22-83d5-4bcc-9acf-94dd95863644",
+      "name": "TRIM VIDEO",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2528,
+        0
+      ],
+      "id": "b4a7ed33-94e6-4cdd-8bd0-a5ee06974755",
+      "name": "Wait Trim",
+      "webhookId": "c5b8fe44-a5f7-4dee-9ce1-b6ff17085866"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2688,
+        0
+      ],
+      "id": "d6c90055-b608-4eff-8de2-c7aa28196977",
+      "name": "GET TRIM",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🔊 Merge Audio & Vidéo",
+        "height": 80,
+        "width": 464,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        -96
+      ],
+      "id": "e7da1166-c719-4a00-9e13-d8bb39207a88",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-audio-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video.url }}\",\n  \"audio_url\": \"{{ $('Merge').item.json.media.url }}\"\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2880,
+        0
+      ],
+      "id": "f8eb2277-d82a-4b11-8f24-e9cc40318b99",
+      "name": "MERGE AUDIO VIDEO",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 90
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3040,
+        0
+      ],
+      "id": "0afc3388-e93b-4c22-9035-f0dd51429c00",
+      "name": "Wait Merge AV",
+      "webhookId": "1b0d4499-fa4c-4d33-a146-01ee62530d11"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3200,
+        0
+      ],
+      "id": "2c1e55aa-0b5d-4e44-b257-12ff73641e22",
+      "name": "GET MERGE AV",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "video.url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3360,
+        0
+      ],
+      "id": "3d2f66bb-1c6e-4b55-8368-23aa84752f33",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "content": "## 🎞️ Montage Final (merge-videos)",
+        "height": 80,
+        "width": 624,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3504,
+        -96
+      ],
+      "id": "4e3077cc-2d7f-4c66-9479-34bb95863044",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": {{ JSON.stringify($json.url) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3520,
+        0
+      ],
+      "id": "5f4188dd-3e80-4d77-867a-45cc06974155",
+      "name": "MONTAGE FINAL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3680,
+        0
+      ],
+      "id": "605299ee-4f91-4e88-978b-56dd17085266",
+      "name": "Wait Montage Final",
+      "webhookId": "7164aaff-50a2-4d99-a89c-67ee28196377"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3840,
+        0
+      ],
+      "id": "8275bb00-61b3-4eaa-b8bd-78ff39207488",
+      "name": "GET MONTAGE FINAL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4016,
+        0
+      ],
+      "id": "9386cc11-72c4-4fbb-89ce-89aa40318599",
+      "name": "Téléchargement Final"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "START": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "IMAGE GPT IMAGE 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "VOIX OFF TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IMAGE GPT IMAGE 2": {
+      "main": [
+        [
+          {
+            "node": "Wait Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Image": {
+      "main": [
+        [
+          {
+            "node": "GET IMAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET IMAGE": {
+      "main": [
+        [
+          {
+            "node": "VIDEO GROK IMAGINE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VIDEO GROK IMAGINE": {
+      "main": [
+        [
+          {
+            "node": "Wait Vidéo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Vidéo": {
+      "main": [
+        [
+          {
+            "node": "GET VIDEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET VIDEO": {
+      "main": [
+        [
+          {
+            "node": "Lien Vidéo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lien Vidéo": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VOIX OFF TTS": {
+      "main": [
+        [
+          {
+            "node": "Wait Voix Off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Voix Off": {
+      "main": [
+        [
+          {
+            "node": "GET AUDIO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET AUDIO": {
+      "main": [
+        [
+          {
+            "node": "METADATA AUDIO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "METADATA AUDIO": {
+      "main": [
+        [
+          {
+            "node": "Wait Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Metadata": {
+      "main": [
+        [
+          {
+            "node": "GET METADATA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET METADATA": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "TRIM VIDEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TRIM VIDEO": {
+      "main": [
+        [
+          {
+            "node": "Wait Trim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Trim": {
+      "main": [
+        [
+          {
+            "node": "GET TRIM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET TRIM": {
+      "main": [
+        [
+          {
+            "node": "MERGE AUDIO VIDEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MERGE AUDIO VIDEO": {
+      "main": [
+        [
+          {
+            "node": "Wait Merge AV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Merge AV": {
+      "main": [
+        [
+          {
+            "node": "GET MERGE AV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET MERGE AV": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "MONTAGE FINAL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MONTAGE FINAL": {
+      "main": [
+        [
+          {
+            "node": "Wait Montage Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Montage Final": {
+      "main": [
+        [
+          {
+            "node": "GET MONTAGE FINAL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET MONTAGE FINAL": {
+      "main": [
+        [
+          {
+            "node": "Téléchargement Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2d570b70-3943-4ee7-803c-6f15364490ba",
+  "meta": {
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "eHI7fHMmpngjHW6b",
+  "tags": []
+}

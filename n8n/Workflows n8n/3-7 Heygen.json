@@ -1,0 +1,183 @@
+{
+  "name": "3-7 Heygen",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "91a28190-7e6e-4c10-a619-f12db81697c3",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v3/videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "avatar"
+            },
+            {
+              "name": "avatar_id",
+              "value": "81d9da9613a149b3ba16ca0ab9e88ae9"
+            },
+            {
+              "name": "script",
+              "value": "Bonjour, bienvenue dans la deuxième version de ma formation. J'espère qu'elle te plaît et t'apporte un maximum de valeur jusqu'à présent. Si tu as le moindre problème, n'hésite pas à me contacter sur Telegram. "
+            },
+            {
+              "name": "voice_id",
+              "value": "8727a9be18a9455a889328660f9f13bb"
+            },
+            {
+              "name": "title",
+              "value": "Photo Avatar Demo"
+            },
+            {
+              "name": "resolution",
+              "value": "1080p"
+            },
+            {
+              "name": "aspect_ratio",
+              "value": "16:9"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "33c3104a-2df7-4645-9755-c79d10ba68a4",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QfOEsGuu528esCPJ",
+          "name": "Heygen"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "3531c5b8-5787-46f5-982e-68d2cccc7b4d",
+      "name": "Wait",
+      "webhookId": "0ab959e0-7c09-4cbe-9357-70a338227a96"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.heygen.com/v3/videos/{{ $json.data.video_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        544,
+        0
+      ],
+      "id": "ec3360ec-3ce3-4c04-bbe6-4e2395f8f1c2",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QfOEsGuu528esCPJ",
+          "name": "Heygen"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.video_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        752,
+        0
+      ],
+      "id": "5810cb1e-2f98-4d78-94c7-a42b8b7ad179",
+      "name": "HTTP Request2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e526f85b-40cc-4c1c-832f-2e76c8b4490b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "K8Lc9uBGrdinY7FG",
+  "tags": []
+}

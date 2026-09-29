@@ -1,0 +1,626 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7ba2c769-7af8-4ca7-ba27-ac01bbc27119",
+      "name": "START"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55bc357b-9738-42b2-a63c-4492b254f160",
+              "name": "Type de Documentaire",
+              "value": "Dinosaures",
+              "type": "string"
+            },
+            {
+              "id": "751cd0ba-3a83-4cf2-bea5-98e9b53515b4",
+              "name": "Nombre de scènes",
+              "value": "10",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        0
+      ],
+      "id": "2934ac7b-b364-4f8e-9506-5420109affbf",
+      "name": "Data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Fais moi des prompts pour un documentaire sur : {{ $json['Type de Documentaire'] }}\n\nJe souhaite que ce documentaire soit découpé en {{ $json['Nombre de scènes'] }} scènes",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Documentary Scene Prompt Generator (Image + Video)\n\n  🅰️ A – Demande :\n    À partir de l'user message contenant (1) un TYPE de documentaire et (2) un NOMBRE de scènes X,\n    imagine un documentaire cohérent découpé en X scènes distinctes et consécutives.\n    Pour CHAQUE scène, produis un prompt image ET un prompt vidéo cinématographique détaillé\n    (voix off masculine incluse directement dans le prompt vidéo).\n    Génère EXACTEMENT X scènes — X est le nombre fourni dans l'user message, ni plus ni moins.\n\n  🇬 G – Orientation :\n    role: Réalisateur / concepteur de documentaires animaliers et naturels haut de gamme (style National Geographic)\n    tone: réaliste, immersif, cinématographique, sérieux, sans sensationnalisme\n    output_count: X (valeur exacte lue dans l'user message)\n    language: TOUT le contenu généré (image_prompt et video_prompt, voix off comprise) doit être rédigé EN ANGLAIS, quelle que soit la langue de l'user message.\n    continuity: Les scènes doivent se suivre logiquement et raconter une progression narrative cohérente dans un même univers/environnement.\n\n    image_prompt_rules:\n      - Décrire une image fixe photoréaliste, ultra-détaillée, qualité 4K.\n      - Style documentaire animalier / nature haut de gamme (National Geographic).\n      - Préciser : sujet, action, décor, lumière (golden hour, brume, etc.), angle de caméra, type d'objectif réaliste, profondeur de champ.\n      - Comportement animal naturel, anatomie réaliste.\n\n    video_prompt_rules:\n      - Décrire une séquence cinématographique de ~10 secondes, découpée en 3 plans timecodés distincts dans un environnement continu.\n      - Pour chaque plan : cadrage (large/moyen/rapproché), mouvement de caméra, action, ambiance, timecode.\n      - Inclure OBLIGATOIREMENT la voix off DANS le prompt vidéo : voix masculine grave, calme, sérieuse, cinématographique (narrateur documentaire), en anglais, avec le texte narré timecodé ([0–3s], [3–7s], [7–10s]).\n      - Terminer par une section \"Style\" imposant : réalisme total, comportement naturel, lumière documentaire, objectifs réalistes, haut niveau de détail.\n\n    constraints:\n      - Pas de style cartoon, pas d'éléments fantastiques ou surnaturels.\n      - Pas de texte à l'écran, pas de sous-titres.\n      - Pas d'exagération type film d'action ; garder un réalisme documentaire.\n      - Pas de musique qui couvre la narration.\n      - Toute la sortie EN ANGLAIS uniquement.\n\n  🇪 E – Exemples :\n    good_examples:   # 🟢\n      - >\n        image_prompt: \"Ultra-realistic 4K wildlife documentary still. A small herd of Triceratops grazing among giant ferns in a vast prehistoric valley at sunrise. Warm golden light, low ground fog, distant volcanic mountains. Shot on a 35mm cinema lens, slightly elevated wide angle, shallow depth of field, National Geographic style, natural animal behavior, no cartoon, no text.\"\n      - >\n        video_prompt: \"Create a 10-second cinematic documentary video scene about dinosaurs, three distinct shots in one continuous environment.\n        Setting: A vast prehistoric valley at sunrise, giant ferns, ground mist, distant volcanic mountains, warm golden light. Realistic, immersive, high-end nature documentary look.\n        Shot 1 (0–3s): Wide establishing shot of the valley. A small herd of Triceratops walks slowly through the mist and grazes. Stable camera, slightly elevated, very slow cinematic movement.\n        Shot 2 (3–7s): Medium shot closer to the herd. An adult Triceratops raises its head, sensing danger. Far in the background, partly hidden by trees and mist, the silhouette of a large Tyrannosaurus Rex appears. Tension rises but stays natural.\n        Shot 3 (7–10s): Dramatic close shot of the T-Rex slowly stepping out of the shadows, feet crushing leaves and mud. The herd reacts and moves away cautiously. Realistic, no action-movie exaggeration.\n        Voiceover: Deep, calm, serious cinematic male voice, wildlife documentary narrator, in English, lasting the full 10 seconds, slow pace with natural pauses.\n        [0–3s] 'In the heart of this ancient valley, the Triceratops move slowly beneath the morning light.'\n        [3–7s] 'Every sound, every movement may reveal an unseen threat within the mist.'\n        [7–10s] 'For in the shadows, a predator has just begun its hunt.'\n        Style: Ultra-realistic dinosaurs, natural animal behavior, cinematic documentary lighting, realistic lenses, high detail. No cartoon, no fantasy, no on-screen text, no subtitles, no music covering the narration.\"\n    bad_examples:    # 🔴\n      - \"A dinosaur in a forest.\" # trop vague, pas de plans, pas de lumière, pas de voix off\n      - \"Voix off en français : 'Au cœur de la vallée...'\" # voix off doit être en anglais\n      - \"A cute cartoon T-Rex with big sparkly eyes in a magical glowing jungle.\" # style cartoon + fantastique interdits\n\n  🇳 N – Format :\n    format: JSON\n    rules:\n      - Réponds UNIQUEMENT avec du JSON valide et parsable.\n      - N'ajoute AUCUN texte, commentaire, préambule ni balise ``` autour du JSON.\n      - La sortie est un ARRAY d'objets ; chaque objet = une scène.\n      - Le nombre d'objets dans l'array = EXACTEMENT X.\n      - Chaque objet contient : scene_number (entier), image_prompt (string, anglais), video_prompt (string, anglais, voix off incluse).\n    example_output: |\n      {\n        \"scenes\": [\n          {\n            \"scene_number\": 1,\n            \"image_prompt\": \"Ultra-realistic 4K wildlife documentary still ...\",\n            \"video_prompt\": \"Create a 10-second cinematic documentary video scene ... Voiceover (English male narrator): [0–3s] '...' [3–7s] '...' [7–10s] '...' Style: ...\"\n          }\n        ]\n      }\n\n  🇹 T – Outils :\n    Tu as accès aux outils suivants :\n      - Think Tool : à utiliser SYSTÉMATIQUEMENT avant de répondre, pour (1) lire X dans l'user message, (2) planifier l'arc narratif des X scènes, (3) vérifier la continuité et le compte exact avant de produire le JSON final."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "e2cf6cfb-1d3a-4d73-bfe8-ccfb672598fb",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        208
+      ],
+      "id": "921d1caf-a9d8-4194-8289-c57ef4053ee9",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"scenes\": [\n    {\n      \"scene_number\": 1,\n      \"image_prompt\": \"string\",\n      \"video_prompt\": \"string\"\n    }\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        240
+      ],
+      "id": "d7bda9e9-e1df-4029-9372-9a81a80e7ed2",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        288,
+        352
+      ],
+      "id": "35efee22-112b-4682-a2ab-4b0cb80acc1b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        640,
+        0
+      ],
+      "id": "9979829b-6354-433f-af4c-de527c157e0b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"nano-banana-2-lite\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($json.image_prompt) }},\n    \"aspect_ratio\": \"16:9\"\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        912,
+        -112
+      ],
+      "id": "337d8483-f6da-4d83-b069-ccd507c02021",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        -112
+      ],
+      "id": "ac0ee956-1825-4835-80ec-284a4a2bc5ff",
+      "name": "Wait",
+      "webhookId": "555109bc-a2a6-4aa7-a27c-3b0a436179c6"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1232,
+        -112
+      ],
+      "id": "cb0ccf73-f460-45d6-9112-60a74f721eb0",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Image",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        912,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "056cf7ec-36d1-4a09-bb2a-56f6092cb014",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"grok-imagine-video-1-5-preview\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($('Split Out').item.json.video_prompt) }},\n    \"image_urls\": [\n      \"{{ JSON.parse($json.data.resultJson).resultUrls[0] }}\"\n    ],\n    \"aspect_ratio\": \"16:9\",\n    \"resolution\": \"720p\",\n    \"duration\": 10\n  },\n  \"callBackUrl\": \"https://your-domain.com/api/callback\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        912,
+        224
+      ],
+      "id": "463c4826-ec4b-495a-a30a-e78852807f4a",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        224
+      ],
+      "id": "db2b5a5a-7450-4b14-9c46-a6986950d7d0",
+      "name": "Wait1",
+      "webhookId": "5fcb91fb-d927-49be-b381-c6b8652db4e5"
+    },
+    {
+      "parameters": {
+        "content": "## Vidéo",
+        "height": 80,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        912,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "a8709088-74d8-42e0-b9b9-f93debb2d222",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1232,
+        224
+      ],
+      "id": "de09ee01-aed5-4237-a987-25d601a55774",
+      "name": "HTTP Request3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": {{ JSON.stringify($json.lien_video) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1040,
+        528
+      ],
+      "id": "50ff2aa2-19ee-48c7-8f45-221756cf9d2c",
+      "name": "HTTP Request4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67087572-4ac2-4779-8159-76bbeba28148",
+              "name": "lien_video",
+              "value": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        528
+      ],
+      "id": "2ff1d3d8-5830-4f9c-963d-6f64e3f32140",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "lien_video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        864,
+        528
+      ],
+      "id": "914889b5-fb59-4e56-8fa9-b7b0e85def03",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        528
+      ],
+      "id": "3b8ad056-fff4-4124-8e41-3889ce566af1",
+      "name": "Wait2",
+      "webhookId": "79ecd439-e8a8-4136-8712-eac1859c2e9f"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1312,
+        528
+      ],
+      "id": "6837d12d-668b-43c0-8d73-103d3283c800",
+      "name": "HTTP Request5",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "START": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a5560085-f430-4285-9df5-bffe40872c02",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "igCjKrtWClTbt36K",
+  "tags": []
+}

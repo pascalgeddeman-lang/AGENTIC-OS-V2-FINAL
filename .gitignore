@@ -1,0 +1,29 @@
+# Variables d'environnement (clés secrètes)
+.env
+.env.local
+.env.*.local
+
+# Identifiants Google OAuth
+client_secret*.json
+token.json
+credentials.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Dépendances
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Galerie locale du Kie Image Studio (données d'exécution)
+kie-image-studio/storage/

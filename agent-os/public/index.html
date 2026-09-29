@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agentic Os</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23f97316'/><circle cx='50' cy='50' r='16' fill='%23111'/></svg>" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><span></span></div>
+        <div>
+          <div class="brand-name">AGENTIC&nbsp;OS<span style="color:#ff4d4d;font-size:8.5px;font-weight:700;vertical-align:6px">v0.1</span></div>
+          <div class="brand-sub">Systèmes IA</div>
+        </div>
+      </div>
+
+      <nav id="nav">
+        <div class="nav-group">Pilotage</div>
+        <a href="#/dashboard" data-page="dashboard"><i>◧</i>Dashboard</a>
+        <a href="#/tasks" data-page="tasks"><i>≡</i>Tâches &amp; Cron</a>
+        <a href="#/calendar" data-page="calendar"><i>🗓</i>Calendrier</a>
+        <a href="#/architecture" data-page="architecture"><i>⌘</i>Architecture</a>
+
+        <div class="nav-group">Intelligence</div>
+        <a href="#/chat" data-page="chat"><i>❯_</i>Chat Claude</a>
+        <a href="#/hermes" data-page="hermes"><i>☿</i>Chat Hermès</a>
+        <a href="#/brain" data-page="brain"><i>◉</i>Second Cerveau</a>
+        <a href="#/niche" data-page="niche"><i>◎</i>Niche Finder</a>
+        <a href="#/scrap" data-page="scrap"><i>⌕</i>Scrap-o-matic</a>
+        <a href="#/bank" data-page="bank"><i>▦</i>Banque de niches</a>
+
+        <div class="nav-group">Production</div>
+        <a href="#/machines" data-page="machines"><i>⚙</i>Machines</a>
+        <a href="#/channels" data-page="channels"><i>▶</i>Chaînes</a>
+        <a href="#/miniature" data-page="miniature"><i>▣</i>Miniature Creator</a>
+        <a href="#/voices" data-page="voices"><i>🎙</i>Voix</a>
+        <a href="#/musics" data-page="musics"><i>🎵</i>Musiques</a>
+        <a href="#/files" data-page="files"><i>◫</i>Mes fichiers</a>
+
+        <div class="nav-group">Système</div>
+        <a href="#/connections" data-page="connections"><i>⇄</i>Connexions</a>
+        <a href="#/settings" data-page="settings"><i>◍</i>Paramètres</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="sys-led" id="led-claude"><span class="led"></span><img class="agent-ico" src="img/claude.svg" alt="Claude" />Claude CLI</div>
+        <div class="sys-led" id="led-hermes"><span class="led"></span><img class="agent-ico" src="img/hermes.svg" alt="Hermès" />Hermes Agent</div>
+        <div class="sys-led" id="led-kie"><span class="led"></span><img class="agent-ico" src="img/kie.svg" alt="Kie.ai" />Kie.ai</div>
+        <div class="sys-led" id="led-drive"><span class="led"></span><img class="agent-ico" src="img/drive.svg" alt="Google Drive" />Google Drive</div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <h1 id="page-title">Dashboard</h1>
+        <div class="topbar-right">
+          <div class="fresh-chip" id="fresh-chip" title="Âge des données en cache. Aucune actualisation automatique.">
+            <span class="fresh-dot"></span><span id="fresh-text">cache —</span>
+          </div>
+          <button class="btn btn-ghost" id="btn-theme" title="Basculer clair / sombre">☾</button>
+          <button class="btn btn-accent" id="btn-refresh" title="Recharge les données depuis les APIs">
+            ⟳ Actualiser
+          </button>
+        </div>
+      </header>
+      <main id="view" class="view"></main>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+
+  <script src="js/core.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/pages/dashboard.js"></script>
+  <script src="js/pages/architecture.js"></script>
+  <script src="js/pages/chat.js"></script>
+  <script src="js/pages/hermes-chat.js"></script>
+  <script src="js/pages/brain.js"></script>
+  <script src="js/pages/tasks.js"></script>
+  <script src="js/pages/calendar.js"></script>
+  <script src="js/pages/niche.js"></script>
+  <script src="js/pages/scrap.js"></script>
+  <script src="js/pages/bank.js"></script>
+  <script src="js/pages/timetravel.js"></script>
+  <script src="js/pages/linguistique.js"></script>
+  <script src="js/pages/musique.js"></script>
+  <script src="js/pages/stickman.js"></script>
+  <script src="js/pages/bouddhisme.js"></script>
+  <script src="js/pages/channels.js"></script>
+  <script src="js/pages/machines.js"></script>
+  <script src="js/pages/miniature.js"></script>
+  <script src="js/pages/files.js"></script>
+  <script src="js/pages/connections.js"></script>
+  <script src="js/pages/drama.js"></script>
+  <script src="js/pages/crime.js"></script>
+  <script src="js/pages/musics.js"></script>
+  <script src="js/pages/voices.js"></script>
+  <script src="js/pages/settings.js"></script>
+  <script>AgentOS.boot();</script>
+</body>
+</html>

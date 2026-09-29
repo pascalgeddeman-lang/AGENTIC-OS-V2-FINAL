@@ -1,0 +1,915 @@
+{
+  "name": "2-11",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/generate/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        288,
+        96
+      ],
+      "id": "45cb2cda-2066-4a30-8650-48e54ca8af67",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 8,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        96
+      ],
+      "id": "109c298d-d44a-4e94-8ea6-0b68eba9887a",
+      "name": "Wait",
+      "webhookId": "deef872c-3fa9-46fb-a889-03e4c91690df"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.prompt }}"
+            },
+            {
+              "name": "customMode",
+              "value": "true"
+            },
+            {
+              "name": "instrumental",
+              "value": "={{ $('On form submission').first().json['Instrumental ?'] }}"
+            },
+            {
+              "name": "model",
+              "value": "V5_5"
+            },
+            {
+              "name": "callBackUrl",
+              "value": "https://api.example.com/callback"
+            },
+            {
+              "name": "style",
+              "value": "={{ $json.style }}"
+            },
+            {
+              "name": "title",
+              "value": "={{ $json.title1 }}"
+            },
+            {
+              "name": "styleWeight",
+              "value": "0.65"
+            },
+            {
+              "name": "weirdnessConstraint",
+              "value": "0.65"
+            },
+            {
+              "name": "audioWeight",
+              "value": "0.65"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 15000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        32,
+        96
+      ],
+      "id": "ef1d0dc0-b74f-4793-8955-b1dcf3641a70",
+      "name": "HTTP Request26",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.songs",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        96
+      ],
+      "id": "b1f54a64-d87d-4ab7-bd40-d7223aa891e2",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"songs\": [\n    {\n      \"prompt\": \"string (≤ 5000 characters)\",\n      \"style\": \"string (≤ 1000 characters)\",\n      \"title1\": \"chaîne de caractères\",\n      \"title2\": \"string\"\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        304
+      ],
+      "id": "230a2bf9-a1fe-4974-9466-e79c9cdedfc8",
+      "name": "Structured Output Parser",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "formTitle": "Usine à Musique",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Thème Souhaité",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Description de la musique",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Combien de musiques ?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Instrumental ?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "true"
+                  },
+                  {
+                    "option": "false"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Miniature"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -608,
+        96
+      ],
+      "id": "64da622e-1393-40b4-8408-fdcfc8f05292",
+      "name": "On form submission",
+      "webhookId": "83ea977c-ca06-48c5-ad3a-02a61f9d31ac"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        304
+      ],
+      "id": "b418b145-60a2-4db8-a9a0-08fa01d1ca8e",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        336
+      ],
+      "id": "167b0b81-fd80-4b30-b590-212bae82c3cb",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Theme: {{ $json['Thème Souhaité'] }}\n\nStyle: {{ $json['Description de la musique'] }}\n\nNombre de musiques: {{ $json['Combien de musiques ?'] }}\n\nInstrumental? {{ $json['Instrumental ?'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=## SYSTEM PROMPT: 🎶 Agent Générateur de Prompt Musical\n\nA – Demande (Ask):\nGénérer N prompts musicaux basés sur l'entrée utilisateur. Chaque prompt doit inclure un \"prompt\", un \"style\" et deux \"title\" (car chaque prompt donne deux résultats sur SUNO). Le nombre de prompts est fourni dans l'instruction de l'utilisateur (par exemple, \"nombre de chansons 3\").\n\nG – Guide (Guidance):\nrôle:producteur de musique créatif\nnombre_de_sorties: Variable (basé sur l'entrée utilisateur, par défaut = 1)\nlimite_de_caractères:\n  prompt: 5000 caractères\n  style: 1000 caractères\ncontraintes:\n  - Utiliser le mot-clé de style de l'utilisateur, mais l'enrichir ou l'étendre de manière significative\n  - Garder le title court et créatif (suggestion : max 6 mots)\n  - S'assurer que tous les champs ne sont pas vides et sonnent appropriés pour l'industrie musicale\n\nIMPORTANT : Si la requête de l'utilisateur indique que les chansons ne doivent pas être instrumentales (instrumental = false), alors la valeur du prompt est aussi les lyrics de la chanson. Donc, pour ce scénario, assurez-vous que le prompt lui-même sont d'excellents lyrics pour la chanson que vous générerez. N'incluez RIEN d'autre dans le champ prompt que les lyrics eux-mêmes. N'incluez PAS de mots comme Verse, Intro, Chorus, Bridge pour indiquer les sections.\n\nIMPORTANT : Si l'utilisateur demande une certaine durée de chanson, assurez-vous que les lyrics correspondent approximativement à cette durée si les chansons sont demandées avec des lyrics (comme référence, une chanson de 4 minutes comporte 400 à 600 mots). Si les chansons sont instrumentales, indiquez simplement dans le prompt de demander la durée indiquée.\n\nE – Exemples (Examples):\n🟢 bons_exemples:\n  - {\n      \"prompt\": \"soft lofi beat with rain ambiance\",\n      \"style\": \"Lo-fi Chillhop\",\n      \"title\": \"Rainy Window\"\n    }\n  - {\n      \"prompt\": \"jazzy lofi tune with vinyl crackle\",\n      \"style\": \"Lo-fi Jazz\",\n      \"title\": \"Coffee & Crackle\"\n    }\n🔴 mauvais_exemples:\n  - {\n      \"desc\": \"lofi\",\n      \"genre\": \"lofi\",\n      \"name\": \"track1\"\n    }\n  - {\n      \"prompt\": \"\",\n      \"style\": \"Lofi\",\n      \"title\": \"Untitled\"\n    }\n\nN – Notation (Notation):\nformat: JSON\nexemple_de_sortie: |\n  {\n    \"songs\": [\n      {\n        \"prompt\": \"chaîne de caractères (≤ 5000 caractères)\",\n        \"style\": \"chaîne de caractères (≤ 1000 caractères)\",\n        \"title1\": \"chaîne de caractères\",\n        \"title2\": \"chaîne de caractères\"\n      }\n    ]\n  }\n\nT – Outils (Tools):\nVous avez accès aux outils suivants. Chacun est clairement décrit :\n- Outil de Réflexion (Think Tool) : Utilisez-le pour réfléchir à l'humeur, à l'ambiance (vibe) et au contexte du prompt avant de générer chaque entrée."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -432,
+        96
+      ],
+      "id": "5c9d0bbd-b0c1-44fe-a54f-b948f77c4bc3",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Récupère tous les objets JSON entrants\nconst input = items.flatMap(item => {\n  if (Array.isArray(item.json)) return item.json;\n  return item.json;\n});\n\n// Récupère tous les audioUrl\nconst audioUrls = [];\n\nfor (const entry of input) {\n  const sunoData = entry?.data?.response?.sunoData || [];\n\n  for (const audio of sunoData) {\n    if (audio.audioUrl) {\n      audioUrls.push(audio.audioUrl);\n    }\n  }\n}\n\n// Découpe en groupes de 5\nconst chunks = [];\n\nfor (let i = 0; i < audioUrls.length; i += 5) {\n  chunks.push(audioUrls.slice(i, i + 5));\n}\n\n// Retourne 1 item n8n par liste de 5 liens\nreturn chunks.map((chunk, index) => ({\n  json: {\n    listNumber: index + 1,\n    audioUrls: chunk\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        16
+      ],
+      "id": "357d1eae-8377-4a67-8be7-b04c22da3fbb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-audios",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_urls\": {{ JSON.stringify($json.audioUrls) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        16
+      ],
+      "id": "cbd77f0f-87fa-4136-847a-21263d9e8b98",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        16
+      ],
+      "id": "6681bd42-57f1-479f-a74d-cd6b755ce13c",
+      "name": "Wait1",
+      "webhookId": "2fdc17a4-62dd-4acc-be59-a12dd823d70f"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        880,
+        16
+      ],
+      "id": "7719d0e6-8b1a-44ba-a93f-0a8240a42455",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "audio.url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        480,
+        224
+      ],
+      "id": "295c6e85-d696-4bc1-9a16-b5bcc342e267",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-audios",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_urls\": {{ JSON.stringify($json.url) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        224
+      ],
+      "id": "fe658f42-5229-46d5-abed-47bef3ee81bd",
+      "name": "HTTP Request3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        224
+      ],
+      "id": "b26cd83f-29f0-4c8f-9746-742287b94646",
+      "name": "Wait2",
+      "webhookId": "2fdc17a4-62dd-4acc-be59-a12dd823d70f"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        880,
+        224
+      ],
+      "id": "e2a48db1-b11b-429e-aa44-22b0f93ad508",
+      "name": "HTTP Request4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/metadata",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"media_url\": \"{{ $json.audio.url }}\",\n  \"extract_frames\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        480,
+        400
+      ],
+      "id": "2f60a1d4-695e-4df8-b840-908e2921023a",
+      "name": "HTTP Request5",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        400
+      ],
+      "id": "8a3a44bc-c49b-4d96-b634-aa5bc308ce76",
+      "name": "Wait3",
+      "webhookId": "2fdc17a4-62dd-4acc-be59-a12dd823d70f"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        752,
+        400
+      ],
+      "id": "9332116b-ce5c-4d45-a1ea-d844d6a7a465",
+      "name": "HTTP Request6",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const fps = 1;\nconst maxFrames = 1000;\n\nconst item = $input.first().json;\n\nconst duration = item.media.duration;\n\n// URL de l'image depuis le node \"On form submission\"\nconst imageUrl = $items(\"On form submission\")[0].json.Miniature;\n\nconst totalFrames = Math.ceil(duration * fps);\n\nconst images = [];\n\nlet remainingFrames = totalFrames;\n\nwhile (remainingFrames > 0) {\n  const frames = Math.min(remainingFrames, maxFrames);\n\n  images.push({\n    frames,\n    url: imageUrl\n  });\n\n  remainingFrames -= frames;\n}\n\nreturn [\n  {\n    json: {\n      images,\n      fps,\n      imageUrl\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        400
+      ],
+      "id": "23fce33a-1c5a-4833-9ff8-9b303d25d7cc",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        752,
+        592
+      ],
+      "id": "12ad57e0-7c34-4507-a147-f38aaf3c489e",
+      "name": "HTTP Request7",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        592
+      ],
+      "id": "0e2847bd-c547-4e53-adae-4222ace83304",
+      "name": "Wait4",
+      "webhookId": "65fbd387-9770-42d0-8417-98a8bdc48c71"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/images-to-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ images: $json.images, fps: $json.fps }, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        480,
+        592
+      ],
+      "id": "73bc68be-f9be-46ca-926f-f0b3ee77cec8",
+      "name": "HTTP Request8",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-audio-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_url\": \"{{ $json.video.url }}\",\n  \"audio_url\": \"{{ $('HTTP Request6').item.json.media.url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        592
+      ],
+      "id": "df8132c1-de99-4634-817f-2d58987f62dd",
+      "name": "HTTP Request9",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 90
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        592
+      ],
+      "id": "803b4d20-2509-458f-9582-52457ef2c954",
+      "name": "Wait5",
+      "webhookId": "992e3cee-fb24-49a6-ae9a-ba81ac96f756"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1248,
+        592
+      ],
+      "id": "f891853d-e7da-43c4-9866-72197325e650",
+      "name": "HTTP Request10",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request26": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request26",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request9": {
+      "main": [
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "88815382-b180-45e3-baf9-27f0c7fea6ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "uWA2cW68AyXVjOYo",
+  "tags": []
+}

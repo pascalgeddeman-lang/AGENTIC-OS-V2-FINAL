@@ -1,0 +1,800 @@
+{
+  "name": "3-9 Histoire Chats IA (Nyankochin style)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a1b2c3d4-0001-4a00-9000-000000000001",
+      "name": "START"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1000000-0000-4000-8000-000000000001",
+              "name": "Pitch histoire",
+              "value": "Nyankochin craque pour un carton entier de taiyakis en promotion et se retrouve fauchée. Pour renflouer son porte-monnaie, elle enchaîne les petits boulots… mais rien ne se passe comme prévu.",
+              "type": "string"
+            },
+            {
+              "id": "b1000000-0000-4000-8000-000000000002",
+              "name": "Duree totale (secondes)",
+              "value": "180",
+              "type": "string"
+            },
+            {
+              "id": "b1000000-0000-4000-8000-000000000003",
+              "name": "Image nyankochin",
+              "value": "https://tempfile.aiquickdraw.com/seedream5pro/1783622567065-il0fh7hrxps.jpeg",
+              "type": "string"
+            },
+            {
+              "id": "b1000000-0000-4000-8000-000000000004",
+              "name": "Image maman",
+              "value": "https://tempfile.aiquickdraw.com/seedream5pro/1783622644199-smruxw31v5.jpeg",
+              "type": "string"
+            },
+            {
+              "id": "b1000000-0000-4000-8000-000000000005",
+              "name": "Image junko",
+              "value": "https://tempfile.aiquickdraw.com/seedream5pro/1783622624018-4dyyb2sr0hy.jpeg",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        0
+      ],
+      "id": "a1b2c3d4-0002-4a00-9000-000000000002",
+      "name": "Data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Je veux que tu crées l'histoire complète d'une vidéo sur ce pitch : {{ $json['Pitch histoire'] }}\n\nDurée totale à atteindre : {{ $json['Duree totale (secondes)'] }} secondes EXACTEMENT (somme des durées de toutes les scènes).\n\nPersonnages disponibles (image de référence fournie) : {{ ['nyankochin','maman','junko'].filter(p => ($json['Image ' + p] || '').startsWith('http')).join(', ') }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Scénariste « AI猫にゃんこちん » — Histoire en scènes (image + vidéo + durée)\n\n  🅰️ A – Demande :\n    À partir du pitch fourni dans l'user message, écris UNE histoire complète et cohérente dans l'univers de la chaîne YouTube « AI猫にゃんこちん » (Nyankochin), découpée en scènes consécutives.\n    Choisis d'abord un nombre N de scènes ENTIER entre 25 et 30, puis génère EXACTEMENT N scènes — ni plus, ni moins.\n    Pour CHAQUE scène : la liste des personnages présents, un prompt image (anglais), un prompt vidéo (anglais) et une durée en secondes.\n    CONTRAINTE CRITIQUE : la SOMME des durées de toutes les scènes doit faire EXACTEMENT {{ $json['Duree totale (secondes)'] }} secondes.\n\n  🇬 G – Orientation :\n    role: Scénariste-réalisateur des vidéos virales de la chaîne (chats photoréalistes anthropomorphes, comédie kawaii japonaise)\n    tone: mignon, drôle, émotions félines exagérées (grosses larmes qui coulent, yeux écarquillés), chaleureux, jamais méchant\n    output_count: N scènes (25 ≤ N ≤ 30, choisi par toi selon le rythme de l'histoire)\n    language: image_prompt et video_prompt STRICTEMENT EN ANGLAIS ; le champ titre en FRANÇAIS\n\n    univers_canon:\n      - nyankochin : chatonne tigrée rousse et blanche (orange-and-white tabby kitten), minuscule, grands yeux bleus très expressifs, maladroite, joyeuse, gourmande insatiable, fauchée chronique, employée de supérette. Tenue par défaut : petite salopette en jean + sac à dos rose en forme d'ourson. Tenues signature selon le contexte : jogging rouge + serviette blanche nouée sur la tête (cocooning), pyjama rose à pois (nuit), petit costume-cravate (entretien d'embauche), uniforme du petit boulot du jour (tablier, toque, casque de chantier…).\n      - maman : chatte adulte rousse et blanche, bigoudis multicolores dans les poils, tablier fleuri (ou tenue léopard pour les grandes occasions), vit dans une maison japonaise traditionnelle au milieu des rizières.\n      - junko : chatte blanche adulte, plus grande que nyankochin, lunettes de lecture, collègue senior de la supérette, sérieuse, disciplinée, contre-modèle comique de nyankochin.\n      - figurants humains autorisés en arrière-plan ou en rôle secondaire : gérant de supérette, clients, médecin, dame âgée, artisan, policier — JAMAIS protagonistes.\n      - accessoires fétiches à réutiliser : tricycle rose, porte-monnaie en peluche (souvent vide), enveloppe de salaire japonaise, livret bancaire, smartphone rose à oreilles d'ourson, CV, écrans parodiques « Nyangle » / « Nyamazon ».\n      - décors récurrents : supérette japonaise, konbini, petite cuisine, salle de bain avec miroir, salon kotatsu/tatami, chambre à futon, rue commerçante japonaise, lieu du petit boulot (food-truck taiyaki, studio TV, port de pêche, chantier, restaurant…).\n\n    structure_narrative (OBLIGATOIRE, dans cet ordre) :\n      1. Cold open choc (2-3 scènes) : la catastrophe ou l'émotion au présent, gros plan sur les larmes ou la panique — on ne comprend pas encore pourquoi.\n      2. Flashback « quelques heures plus tôt » : retour au quotidien paisible.\n      3. Déclencheur : gourmandise, maladresse ou tentation (promo -50 %, pub TV, vente flash) qui vide le porte-monnaie ou casse quelque chose.\n      4. Constat de la galère : porte-monnaie en peluche vide, livret bancaire consulté avec effroi, désespoir mignon.\n      5. Quête du baito (petit boulot) : annonce, CV, entretien en costume-cravate, puis le travail en uniforme avec 2-3 gags de maladresse adorables.\n      6. Salaire : l'enveloppe japonaise reçue à deux pattes, avec fierté.\n      7. Résolution + récompense : achat ou réparation, puis festin japonais ou moment cocooning.\n      8. Bonus final (2-3 scènes) : ironique (elle retombe immédiatement dans ses travers — la leçon n'est pas retenue) OU tendre (moment familial chaleureux avec maman).\n\n    durees_rules:\n      - duree = ENTIER parmi 6, 7, 8, 9, 10 — JAMAIS moins de 6, JAMAIS plus de 10 (contrainte technique du modèle vidéo).\n      - Majorité de scènes courtes (6-7 s) pour le rythme ; réserve les 8-10 s aux moments forts (cold open, climax, festin, émotion).\n      - Varie les durées : ne mets JAMAIS la même durée à toutes les scènes.\n      - RAPPEL CRITIQUE : somme des durées = EXACTEMENT {{ $json['Duree totale (secondes)'] }} secondes. Calcule la somme avec le Think Tool et ajuste avant de répondre.\n\n    image_prompt_rules (EN ANGLAIS, minimum 300 caractères chacun) :\n      - Style à marteler dans CHAQUE prompt : photorealistic photo, real cat (NOT cartoon, NOT 3D render, NOT illustration), humanlike facial expression, ultra-detailed fur, real Japanese location, natural cinematic lighting, shallow depth of field, DSLR photo quality, 16:9.\n      - Décris précisément : le ou les personnages présents (reprendre leur description physique exacte du canon), leur tenue, leur émotion exagérée (streaming glistening tears, sparkling wide eyes, open mouth, drooping ears), l'action en cours, le décor japonais réel, la lumière, l'angle de caméra.\n      - COHÉRENCE : même tenue et même décor d'une scène à l'autre tant que l'histoire reste dans la même séquence ; ne change la tenue que quand l'histoire le justifie (nouvel uniforme, pyjama le soir…).\n      - INTERDIT : texte à l'écran, sous-titres, logos, style cartoon/anime/3D.\n\n    video_prompt_rules (EN ANGLAIS) :\n      - Le prompt anime l'image fixe de la scène : décris le ou les plans (shots) avec des timecodes qui couvrent exactement la durée de la scène.\n      - MULTISHOT PROPORTIONNEL À LA DURÉE (règle stricte) : 6 s → 1 seul plan (2 grand maximum) ; 7-8 s → 2 plans ; 9-10 s → 2 ou 3 plans. Ne mets JAMAIS 3 plans dans une scène de moins de 9 secondes.\n      - Pour chaque plan : cadrage (wide / medium / close-up), mouvement de caméra doux (slow push-in, gentle pan, static…), action et mimiques du chat exagérées mais crédibles.\n      - INTERDIT : parole, voix off, dialogue, texte à l'écran, sous-titres, musique. Seule une ambiance sonore naturelle discrète est tolérée.\n\n    constraints:\n      - personnages : uniquement des valeurs parmi « nyankochin », « maman », « junko », ET uniquement ceux listés comme disponibles dans l'user message ; nyankochin apparaît dans quasiment toutes les scènes.\n      - Chaque scène découle logiquement de la précédente : UNE histoire continue, pas des sketchs déconnectés.\n      - titre : en français, style YouTube de la chaîne (« 【CHOC】… », « 【URGENCE】… », « 【CATASTROPHE】… »), max 100 caractères.\n\n  🇪 E – Exemples :\n    good_examples:   # 🟢\n      - >\n        Scène de cold open (8 s, personnages [\"nyankochin\"]) —\n        image_prompt : \"Photorealistic photo of a tiny real orange-and-white tabby kitten with huge sparkling blue eyes, crying dramatically with big glistening tears streaming down its cheeks, mouth wide open in a silent wail, standing upright at a Japanese supermarket checkout counter, wearing tiny denim overalls and a pink teddy-bear backpack, holding an empty plush coin purse upside down, bright fluorescent store lighting, shallow depth of field, ultra-detailed fur, DSLR photo quality, 16:9, no text, no cartoon.\"\n        video_prompt : \"Shot 1 (0-4s): medium shot, slow push-in on the kitten as it turns the plush coin purse upside down and nothing falls out, ears drooping. Shot 2 (4-8s): close-up on its face, giant tears welling up and streaming down, mouth opening in an exaggerated silent cry, paws pressed against its cheeks. Natural store ambience only, no speech, no voiceover, no on-screen text, no music.\"\n      - \"Répartition de durées correcte : [8,7,6,6,7,6,6,8,6,7,6,6,6,7,6,6,8,6,6,7,6,6,6,7,6,8,10] → 27 scènes, somme = 180 ✅\"\n    bad_examples:    # 🔴\n      - \"A cute cartoon cat crying.\" # trop court, style cartoon interdit, aucun décor ni lumière\n      - \"Shot 1 (0-2s)… Shot 2 (2-4s)… Shot 3 (4-6s)…\" # 3 plans sur 6 secondes : interdit\n      - \"duree: 4\" # durée sous le minimum technique de 6 secondes\n      - \"Voiceover: 'Nyankochin is very sad today…'\" # voix off interdite\n      - \"30 scènes toutes à 6 secondes\" # durées non variées ET somme = 180 uniquement par accident de calcul non vérifié\n\n  🇳 N – Format :\n    format: JSON\n    rules:\n      - Réponds UNIQUEMENT avec du JSON valide et parsable.\n      - N'ajoute AUCUN texte, commentaire ni balise ``` autour du JSON.\n      - scene_number : entier croissant à partir de 1 ; duree : ENTIER sans guillemets ; personnages : tableau de chaînes.\n    example_output: |\n      {\n        \"titre\": \"【CHOC】 Nyankochin dévalise le rayon taiyaki… et le regrette amèrement !\",\n        \"scenes\": [\n          {\n            \"scene_number\": 1,\n            \"personnages\": [\"nyankochin\"],\n            \"image_prompt\": \"Photorealistic photo of a tiny real orange-and-white tabby kitten…\",\n            \"video_prompt\": \"Shot 1 (0-4s): medium shot, slow push-in… Shot 2 (4-8s): close-up…\",\n            \"duree\": 8\n          }\n        ]\n      }\n\n  🇹 T – Outils :\n    Tu as accès aux outils suivants :\n      - Think Tool : à utiliser SYSTÉMATIQUEMENT AVANT de répondre, pour :\n        (1) planifier l'arc narratif complet (cold open → flashback → déclencheur → galère → baito → salaire → récompense → bonus) ;\n        (2) choisir N (entre 25 et 30) et répartir les durées scène par scène ;\n        (3) CALCULER la somme des durées et vérifier qu'elle vaut EXACTEMENT {{ $json['Duree totale (secondes)'] }} — sinon ajuster puis recalculer jusqu'à ce que ce soit exact ;\n        (4) vérifier avant livraison : nombre de scènes = N, personnages uniquement parmi les disponibles, multishot proportionnel à la durée, prompts en anglais d'au moins 300 caractères, cohérence tenues/décors entre scènes, JSON valide sans texte autour."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        384,
+        0
+      ],
+      "id": "a1b2c3d4-0003-4a00-9000-000000000003",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        176
+      ],
+      "id": "a1b2c3d4-0004-4a00-9000-000000000004",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n        \"titre\": \"【CHOC】 Nyankochin dévalise le rayon taiyaki… et le regrette amèrement !\",\n        \"scenes\": [\n          {\n            \"scene_number\": 1,\n            \"personnages\": [\"nyankochin\"],\n            \"image_prompt\": \"Photorealistic photo of a tiny real orange-and-white tabby kitten…\",\n            \"video_prompt\": \"Shot 1 (0-4s): medium shot, slow push-in… Shot 2 (4-8s): close-up…\",\n            \"duree\": 8\n          }\n        ]\n      }",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        224
+      ],
+      "id": "a1b2c3d4-0005-4a00-9000-000000000005",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5.4-nano",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        288,
+        304
+      ],
+      "id": "a1b2c3d4-0006-4a00-9000-000000000006",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        688,
+        0
+      ],
+      "id": "a1b2c3d4-0007-4a00-9000-000000000007",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-2-image-to-image\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($json.image_prompt) }},\n    \"input_urls\": {{ JSON.stringify((($json.personnages && $json.personnages.length) ? $json.personnages : ['nyankochin']).map(p => $('Data').item.json['Image ' + p] || '').filter(u => u.startsWith('http'))) }},\n    \"aspect_ratio\": \"16:9\",\n    \"resolution\": \"1K\"\n  }\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 15000
+            }
+          },
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        -112
+      ],
+      "id": "a1b2c3d4-0008-4a00-9000-000000000008",
+      "name": "Créer Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1088,
+        -112
+      ],
+      "id": "a1b2c3d4-0009-4a00-9000-000000000009",
+      "name": "Wait Image",
+      "webhookId": "c0000000-0000-4000-8000-000000000001"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1248,
+        -112
+      ],
+      "id": "a1b2c3d4-0010-4a00-9000-000000000010",
+      "name": "Résultat Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"grok-imagine-video-1-5-preview\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($('Split Out').item.json.video_prompt) }},\n    \"image_urls\": [\n      \"{{ JSON.parse($json.data.resultJson).resultUrls[0] }}\"\n    ],\n    \"aspect_ratio\": \"16:9\",\n    \"resolution\": \"720p\",\n    \"duration\": {{ $('Split Out').item.json.duree }}\n  }\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 15000
+            }
+          },
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        224
+      ],
+      "id": "a1b2c3d4-0011-4a00-9000-000000000011",
+      "name": "Créer Vidéo",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1088,
+        224
+      ],
+      "id": "a1b2c3d4-0012-4a00-9000-000000000012",
+      "name": "Wait Vidéo",
+      "webhookId": "c0000000-0000-4000-8000-000000000002"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1248,
+        224
+      ],
+      "id": "a1b2c3d4-0013-4a00-9000-000000000013",
+      "name": "Résultat Vidéo",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2000000-0000-4000-8000-000000000001",
+              "name": "lien_video",
+              "value": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        224
+      ],
+      "id": "a1b2c3d4-0014-4a00-9000-000000000014",
+      "name": "Lien vidéo"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "lien_video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        224
+      ],
+      "id": "a1b2c3d4-0015-4a00-9000-000000000015",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": {{ JSON.stringify($json.lien_video) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1744,
+        224
+      ],
+      "id": "a1b2c3d4-0016-4a00-9000-000000000016",
+      "name": "Merge Videos",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1904,
+        224
+      ],
+      "id": "a1b2c3d4-0017-4a00-9000-000000000017",
+      "name": "Wait Merge",
+      "webhookId": "c0000000-0000-4000-8000-000000000003"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2064,
+        224
+      ],
+      "id": "a1b2c3d4-0018-4a00-9000-000000000018",
+      "name": "Résultat Final",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2224,
+        224
+      ],
+      "id": "a1b2c3d4-0019-4a00-9000-000000000019",
+      "name": "Téléchargement"
+    },
+    {
+      "parameters": {
+        "name": "=Histoire Chats IA - {{ $('AI Agent').first().json.output.titre }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "VOTRE_DOSSIER_DRIVE_ID",
+          "mode": "list",
+          "cachedResultName": "Formation v2",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/VOTRE_DOSSIER_DRIVE_ID"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2384,
+        224
+      ],
+      "id": "a1b2c3d4-0020-4a00-9000-000000000020",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "imMA8vkZhJwrnuJ8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1. Histoire (Agent IA)\nPitch + personnages définis dans Data.\nL'agent génère 25-30 scènes (durées 6-10 s, total = 180 s).",
+        "height": 212,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "a1b2c3d4-0021-4a00-9000-000000000021",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 2. Images (Kie gpt-image-2 i2i)\nRéférences personnages injectées selon la scène.",
+        "height": 192,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        928,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "a1b2c3d4-0022-4a00-9000-000000000022",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 3. Vidéos (Kie grok 1.5)\nDurée dynamique 6-10 s par scène, multishot proportionnel.",
+        "height": 80,
+        "width": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        928,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "a1b2c3d4-0023-4a00-9000-000000000023",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 4. Assemblage & Livraison\nFFmpeg merge-videos (FAL) puis upload Drive « Formation v2 ». Pas de son / voix off / musique.",
+        "height": 80,
+        "width": 340,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1744,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "a1b2c3d4-0024-4a00-9000-000000000024",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a233baf7-4515-4d42-bcbb-9365c8c08f1e",
+              "leftValue": "={{ $json.data.resultJson }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1424,
+        -112
+      ],
+      "id": "f738451e-a8c8-4487-a636-fdda95add203",
+      "name": "Filter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "START": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Créer Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Créer Image": {
+      "main": [
+        [
+          {
+            "node": "Wait Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Image": {
+      "main": [
+        [
+          {
+            "node": "Résultat Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Résultat Image": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Créer Vidéo": {
+      "main": [
+        [
+          {
+            "node": "Wait Vidéo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Vidéo": {
+      "main": [
+        [
+          {
+            "node": "Résultat Vidéo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Résultat Vidéo": {
+      "main": [
+        [
+          {
+            "node": "Lien vidéo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lien vidéo": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Videos": {
+      "main": [
+        [
+          {
+            "node": "Wait Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Merge": {
+      "main": [
+        [
+          {
+            "node": "Résultat Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Résultat Final": {
+      "main": [
+        [
+          {
+            "node": "Téléchargement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Téléchargement": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Créer Vidéo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cf8f7150-631d-415e-9b8b-ca2b73447f60",
+  "meta": {
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [],
+  "id": "gmBBhXjkXSHRblPd",
+  "tags": []
+}

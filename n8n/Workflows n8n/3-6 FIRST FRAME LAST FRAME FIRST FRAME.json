@@ -1,0 +1,729 @@
+{
+  "name": "3-6 FIRST FRAME LAST FRAME FIRST FRAME",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        0
+      ],
+      "id": "974b168c-c4ef-4dbd-8aed-4fa7b9d219b4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "46ddb44b-85df-4fd0-b28e-df5867b66dc1",
+              "name": "Vidéo Exemple",
+              "value": "https://www.youtube.com/watch?v=gYjBeNKzJ7w",
+              "type": "string"
+            },
+            {
+              "id": "e8301f4c-725a-4e93-b5d5-44f6e4fd1d29",
+              "name": "Marque de voiture",
+              "value": "Mercedes",
+              "type": "string"
+            },
+            {
+              "id": "6809dcbd-0c79-4feb-a838-0eed189ca07c",
+              "name": "Description transformation",
+              "value": "L'animation de transformation que tu décris se base sur un effet visuel spectaculaire où chaque véhicule semble se \"déplier\" ou se reconstruire mécaniquement. La voiture actuelle semble effectuer un mouvement d'ouverture articulée, comme si ses panneaux de carrosserie, ses portes et son capot s'élevaient ou se repliaient pour dévoiler une structure interne lumineuse, souvent accompagnée d'un effet de flou ou de brillance intense qui cache brièvement le véhicule, pour ensuite le voir se réassembler instantanément dans une nouvelle forme aérodynamique et moderne. C'est une transition fluide et futuriste qui transforme la silhouette entière du véhicule, changeant sa taille, sa forme et ses détails esthétiques.\\n\\nVoici une proposition de prompt détaillé pour générer ou reproduire ce type d'animation :\\n\\n« High-quality, cinematic 3D animation sequence of a vintage car morphing into a futuristic concept vehicle. As the car drives along a snowy road nestled in a dense pine forest, a mechanical transformation sequence begins. The car’s hood and body panels gracefully fold upward and outward like an intricate puzzle. Brilliant, glowing neon light bursts forth from the engine bay, enveloping the chassis in a bright, ethereal aura that obscures its form. As the light fades, the components seamlessly reassemble into a sleek, streamlined, aerodynamic supercar. The entire process is fluid, high-tech, and photorealistic, focusing on the organic mechanics and smooth transitions of the shifting automotive parts, captured by a dynamic tracking shot. »",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "c6ec15f4-af8d-48ed-ad6a-3a52709f9a0c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/gemini-3.1-flash-lite\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"Décris-moi précisément l'animation de transformation des voitures. Dans la vidéo il y a des voitures qui se transforment d'un modèle à un autre. J'ai besoin que tu me fasses un prompt vidéo de 100 mots minimum pour décrire la transformation.\"\n        },\n        {\n          \"type\": \"video_url\",\n          \"video_url\": {\n            \"url\": \"{{ $json['Vidéo Exemple'] }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        352,
+        -256
+      ],
+      "id": "d112a7b8-68a8-4002-9e82-30f67542e4e7",
+      "name": "HTTP Request",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crée moi des prompts de modèle de voiture de la marque {{ $json['Marque de voiture'] }}\n\nCrée moi des prompts d'animation respectant ce processus : \n\n{{ $json['Description transformation'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT : Générateur de Séquence Morphing Automobile (Timelapse 10 modèles)\n\n  🅰️ A – Demande :\n    À partir d'une MARQUE automobile (input) et de la DESCRIPTION DE TRANSFORMATION fournie\n    dans le message utilisateur, génère la chronologie visuelle de l'évolution de cette marque.\n    Génère EXACTEMENT 10 scènes, chacune correspondant à un modèle réel et emblématique de la\n    marque, classées par ordre chronologique croissant (du plus ancien au plus récent).\n    Pour chaque scène tu produis : un prompt image (first frame) et un prompt d'animation (morphing mécanique).\n\n  🇬 G – Orientation :\n    role: Historien automobile expert + directeur artistique de séquences cinématiques 3D photoréalistes.\n    tone: technique, précis, photoréaliste, cinématographique.\n\n    langue:\n      - Champs descriptifs / narratifs : français.\n      - image_prompt et animation_prompt : ANGLAIS (meilleur rendu sur les générateurs image/vidéo).\n\n    decor_de_reference:\n      - AVANT de générer les scènes, DÉFINIS MENTALEMENT (via le Think Tool) UN SEUL décor de référence cohérent : route + environnement + lumière + météo + type de plan.\n      - Ce décor n'est PAS imposé : choisis-le librement, adapté à l'ambiance de la marque (route de montagne, côtière, désert, forêt, urbaine…).\n      - Une fois défini, INTÈGRE-LE À L'IDENTIQUE DANS CHAQUE image_prompt : même route, environnement, lumière, météo, angle, écrits mot pour mot dans les 10 prompts. Pas de champ séparé.\n      - Seul le VÉHICULE change. Le fond reste strictement identique.\n      - Angle de caméra constant : tracking shot latéral suivant la voiture.\n\n    direction_de_deplacement:\n      - ⛔ RÈGLE N°1, LA PLUS IMPORTANTE : la voiture avance et fait FACE au COIN INFÉRIEUR GAUCHE du cadre. C'est la contrainte prioritaire, elle prime sur tout.\n      - Cette formulation doit être la TOUTE PREMIÈRE PHRASE de chaque image_prompt ET animation_prompt, puis RÉPÉTÉE à la fin.\n      - Description concrète à inclure MOT POUR MOT en tête de chaque prompt : \"CAMERA AND CAR ORIENTATION (most important): the car is driving diagonally toward the LOWER-LEFT corner of the frame. The FRONT of the car (grille, headlights, bumper) points to the lower-left. We see the RIGHT flank and the front of the car in three-quarter front view. The roof is UP, the wheels are DOWN on the road.\"\n      - INTERDICTIONS d'orientation à écrire dans chaque prompt : \"The car is NOT upside down, NOT rotated, NOT reversed, NOT facing right, NOT facing the camera front-on, NOT seen from the rear. Wheels always on the ground, roof always on top.\"\n      - Réaffirme en fin de prompt : \"Again: the car faces and moves toward the lower-left corner, wheels down, roof up.\"\n\n    animation_mecanique:\n      - ⛔ Transformation MÉCANIQUE CONTINUE type \"Transformers\" : les MÊMES panneaux, portes, capot, ailes et roues du véhicule de départ se replient, pivotent, coulissent et se reconfigurent physiquement pour devenir le véhicule d'arrivée.\n      - INTERDICTIONS ABSOLUES dans CHAQUE animation_prompt :\n          - AUCUN modèle intermédiaire, AUCUNE voiture supplémentaire, AUCUNE forme futuriste ou différente entre le premier et le dernier véhicule.\n          - AUCUN flash, AUCUNE explosion de lumière, AUCUN néon, AUCUN glow qui masque la voiture.\n          - AUCUN cut, AUCUN saut d'image, AUCUN multi-shot, AUCUN changement de plan, AUCUN fondu : plan UNIQUE, prise ININTERROMPUE.\n          - AUCUNE régénération : uniquement du mouvement mécanique physique des pièces existantes.\n      - STRUCTURE TEMPORELLE OBLIGATOIRE sur 6 secondes, écrite explicitement dans chaque animation_prompt :\n          - 0s–2s : le véhicule de DÉPART roule normalement vers le coin inférieur gauche, aucune transformation.\n          - 2s–4s : transformation mécanique continue — les panneaux existants se replient et se réagencent progressivement pour devenir le véhicule final, sans jamais montrer une autre voiture.\n          - 4s–6s : la transformation est TERMINÉE ; le véhicule final est IMMOBILE, ARRÊTÉ, STATIQUE, posé sur la route. Il NE roule PAS, NE bouge PAS, N'accélère PAS. Le plan se FIGE strictement sur cette image finale (freeze sur le last frame). La voiture reste parfaitement immobile jusqu'à la fin.\n      - ⛔ TRÈS IMPORTANT : dans les 2 dernières secondes la voiture est à L'ARRÊT COMPLET. Le clip doit se terminer sur une image FIXE et STABLE du véhicule final, sans aucun mouvement d'avancement, sans accélération, sans dépassement du cadre.\n      - Le first frame = EXACTEMENT le véhicule de départ ; le last frame = EXACTEMENT le véhicule d'arrivée, immobile ; rien entre les deux.\n      - Le prompt d'animation reste GÉNÉRIQUE sur la cible (ne décrit pas le modèle d'arrivée).\n\n    continuite_frame_to_frame:\n      - Chaîne continue : le véhicule en LAST FRAME (immobile) de la scène N devient le FIRST FRAME de la scène N+1.\n      - image_prompt de la scène N+1 = le MÊME modèle que la cible du morph de la scène N.\n      - image_prompt = véhicule net roulant sur le décor de référence, orienté bas-gauche.\n      - animation_prompt = morph mécanique vers le modèle suivant, se figeant à l'arrêt sur le last frame.\n\n    output_count: 10\n    character_limit: image_prompt ≤ 1000 caractères ; animation_prompt ≤ 1200 caractères.\n\n    constraints:\n      - 🚫 AUCUN texte, date, chiffre, logo, watermark, sous-titre à l'écran.\n      - ⛔ La voiture FAIT FACE et avance vers le coin inférieur gauche, wheels down / roof up, jamais à l'envers, jamais retournée — priorité n°1, martelée en début ET fin de chaque prompt.\n      - ⛔ Animation = morph mécanique continu, plan unique, SANS modèle intermédiaire, SANS flash, SANS cut, SANS multi-shot.\n      - ⛔ Timeline 6s : 2s départ (roule) / 2s transformation / 2s véhicule final À L'ARRÊT, image figée, aucune accélération ni avancement.\n      - Les années restent UNIQUEMENT dans le champ \"year\".\n      - Décor recopié EN ENTIER dans chaque image_prompt.\n      - Modèles RÉELS, vérifiés, datés, ordonnés chronologiquement, décrits fidèlement (silhouette, calandre, phares, proportions, jantes, finitions d'époque).\n      - Cohérence : \"high-quality cinematic 3D animation, photorealistic, single continuous shot\".\n\n  🇪 E – Exemples :\n    good_examples:   # 🟢\n      - \"image_prompt (Toyota AA) : CAMERA AND CAR ORIENTATION (most important): the car is driving diagonally toward the LOWER-LEFT corner of the frame. The FRONT of the car (grille, headlights, bumper) points to the lower-left. We see the right flank and front in three-quarter front view. Roof UP, wheels DOWN on the road. The car is NOT upside down, NOT reversed, NOT facing right, NOT seen from the rear. — A 1936 Toyota AA sedan, cream body, tall rounded chrome grille, round chrome headlights, spoked wheels, driving on a snowy mountain road through a dense pine forest, soft winter daylight, dynamic side tracking shot, photorealistic 3D. Again: the car faces and moves toward the lower-left corner, wheels down, roof up. No text, no logo, no date.\"\n      - \"animation_prompt : CAR ORIENTATION (most important): the car faces and moves toward the LOWER-LEFT corner, front pointing lower-left, roof up, wheels down, NOT upside down, NOT reversed. Single continuous shot, one fixed uninterrupted take, photorealistic. Timeline over 6 seconds: 0-2s the starting car drives normally toward the lower-left, no change; 2-4s a continuous MECHANICAL Transformers-style transformation where the existing hood, panels, doors and fenders physically fold, rotate and slide to reconfigure into the next vehicle; 4-6s the transformation is COMPLETE and the final car is fully STOPPED, motionless and static on the road, the shot FREEZES on this final frame with NO forward motion and NO acceleration. NO intermediate car, NO extra or futuristic model, NO light flash, NO glow, NO cut, NO multi-shot. Only existing parts mechanically rearrange. Ends on a stable frozen image of the final car facing the lower-left corner.\"\n    bad_examples:    # 🔴\n      - \"...the car speeds up / drives away in the last seconds.\"   # interdit : doit s'arrêter et se figer\n      - \"...the car drives toward the right / seen from behind / upside down.\"   # mauvaise orientation\n      - \"...neon light bursts and obscures the car.\"   # interdit : flash/lumière\n      - \"...a futuristic car briefly appears during the morph.\"   # interdit : modèle intermédiaire\n      - \"...cut to the transformed car / multi-shot.\"   # interdit : cut / multi-shot\n      - \"A vintage car on a road.\"   # générique, orientation et décor absents\n\n  🇳 N – Format :\n    format: JSON\n    rules:\n      - Réponds UNIQUEMENT avec du JSON valide et parsable.\n      - N'ajoute AUCUN texte, commentaire ou balise ``` autour du JSON.\n      - Le tableau \"scenes\" contient EXACTEMENT 10 objets.\n      - Orientation (coin inférieur gauche) en PREMIÈRE phrase de chaque prompt, réaffirmée à la fin.\n      - Timeline 6s avec arrêt/freeze final intégrée dans chaque animation_prompt.\n    example_output: |\n      {\n        \"brand\": \"Toyota\",\n        \"scenes\": [\n          {\n            \"index\": 1,\n            \"model\": \"Toyota AA\",\n            \"year\": \"1936\",\n            \"image_prompt\": \"CAMERA AND CAR ORIENTATION (most important): the car is driving toward the LOWER-LEFT corner... No text, no logo, no date.\",\n            \"animation_prompt\": \"CAR ORIENTATION (most important): ... Timeline over 6 seconds: 0-2s... 2-4s mechanical transformation... 4-6s final car fully STOPPED, shot FREEZES on the final frame. NO intermediate car, NO flash, NO cut.\"\n          }\n        ]\n      }\n\n  🇹 T – Outils :\n    Tu as accès aux outils suivants :\n      - Think Tool : à utiliser SYSTÉMATIQUEMENT avant de répondre pour (1) choisir les 10 modèles réels et vérifier l'ordre chronologique, (2) définir le décor de référence recopié dans chaque image_prompt, (3) vérifier la continuité last-frame → first-frame, (4) vérifier que l'orientation \"coin inférieur gauche, roof up / wheels down\" est en première phrase ET réaffirmée en fin de chaque prompt, (5) vérifier que chaque animation_prompt contient la timeline 6s avec ARRÊT et FREEZE final (pas d'accélération, pas d'avancement sur 4-6s), (6) vérifier l'interdiction explicite de modèle intermédiaire, flash, cut et multi-shot, (7) vérifier qu'aucun texte/date/logo n'apparaît."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "246da12b-5900-4a54-99f2-6c0805a1217f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        336,
+        224
+      ],
+      "id": "76c9c6f5-32ea-41fd-9ca2-43df3aa20c80",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "zZEGEyLAORClVvtv",
+          "name": "COMPTE FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        224
+      ],
+      "id": "820fe026-1d2f-463b-b171-fae28d56fbd7",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"brand\": \"string\",\n  \"scenes\": [\n    {\n      \"index\": 1,\n      \"model\": \"string\",\n      \"year\": \"string\",\n      \"image_prompt\": \"string\",\n      \"animation_prompt\": \"string\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        224
+      ],
+      "id": "e5ffdc7b-56d6-476d-b9f0-2c392560443a",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "f921769c-a2f1-4478-a155-0bf80e029122",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-2-text-to-image\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($json.image_prompt) }},\n    \"aspect_ratio\": \"16:9\"\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        0
+      ],
+      "id": "d03ab7f9-54ba-4cec-9476-d21ceb028009",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "9635b3f2-b40a-4e61-adbd-8b4c0d01c631",
+      "name": "Wait",
+      "webhookId": "4da0a2ad-27c3-49d5-9506-4d414936ea36"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "a27379ca-c5cb-4d42-9ae3-e91c83f77e0c",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Node Code n8n — \"Run Once for All Items\"\n// Seedance 1.5 Pro — first frame / last frame\nconst items = $input.all();\n\nconst urls = items.map(item => {\n  const result = JSON.parse(item.json.data.resultJson);\n  return result.resultUrls[0];\n});\n\nconst splitOutItems = $('Split Out').all();\n\nconst output = [];\n\nfor (let i = 0; i < urls.length; i++) {\n  const isLast = i === urls.length - 1;\n\n  const inputUrls = isLast\n    ? [urls[i]]\n    : [urls[i], urls[i + 1]];\n\n  const prompt = isLast\n    ? \"The car drives forward along the coastal road, smooth continuous motion, cinematic side tracking shot.\"\n    : splitOutItems[i].json.animation_prompt;\n\n  output.push({\n    json: {\n      model: \"bytedance/seedance-1.5-pro\",\n      callBackUrl: \"https://your-domain.com/api/callback\",\n      input: {\n        prompt: prompt,\n        input_urls: inputUrls,\n        aspect_ratio: \"16:9\",\n        resolution: \"720p\",\n        duration: 6,\n        generate_audio: false,\n        nsfw_checker: true\n      }\n    }\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        0
+      ],
+      "id": "0b14c115-8cca-4f08-93be-319591898c3f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"bytedance/seedance-1.5-pro\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {{ JSON.stringify($json.input) }}\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        0
+      ],
+      "id": "b87d7255-7f44-463b-a81a-f14bfa37e07c",
+      "name": "HTTP Request3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1744,
+        0
+      ],
+      "id": "2d8c42c6-e390-4c0b-bcef-7e1d7787f9f7",
+      "name": "Wait1",
+      "webhookId": "422bddc4-7dc7-4627-b244-2659fe0e8b62"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1904,
+        0
+      ],
+      "id": "3bb44b97-7751-49a8-9a18-94661ebafd3f",
+      "name": "HTTP Request4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fh1N9P4ebE0CDRHS",
+          "name": "Kie FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9cb88229-7544-40e8-a4b2-180edef518fd",
+              "name": "Video",
+              "value": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2112,
+        0
+      ],
+      "id": "36ac8b8c-e4f8-4715-9d1f-67f98337d65e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": {{ JSON.stringify($json.Video) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2464,
+        0
+      ],
+      "id": "fc61039b-57d1-4cfb-bdb2-691e5b9b3d84",
+      "name": "HTTP Request5",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        0
+      ],
+      "id": "91488a05-ceff-47d0-9f66-715739b35e3d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2608,
+        0
+      ],
+      "id": "29708aac-0e33-4aa1-bcc0-c2d17fef8880",
+      "name": "Wait2",
+      "webhookId": "ec8e2c2e-4f52-4759-ae10-dbb606436a78"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2752,
+        0
+      ],
+      "id": "bc3a3020-6a2c-42f6-b4d8-e893ee249693",
+      "name": "HTTP Request6",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CqXjbYANwjlzLF3k",
+          "name": "FAL FORMATION V2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3008,
+        0
+      ],
+      "id": "f952883f-94c7-46b8-8058-d520819dec26",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "url": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        -272
+      ],
+      "id": "d0f2c07e-a6a6-4f70-bd37-33d475868ede",
+      "name": "HTTP Request8",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "bb16465e-da38-43ea-8771-392664da8b0f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cbc1132b90d39b2394e6463130413cb4a83042f6bc41de1a0715d481fa45bb1"
+  },
+  "nodeGroups": [
+    {
+      "id": "c7c53f74-bfa0-4d88-8c2b-bb4a9aa2bacd",
+      "name": "Images",
+      "nodeIds": [
+        "d03ab7f9-54ba-4cec-9476-d21ceb028009",
+        "9635b3f2-b40a-4e61-adbd-8b4c0d01c631",
+        "a27379ca-c5cb-4d42-9ae3-e91c83f77e0c"
+      ]
+    },
+    {
+      "id": "ada810c0-9086-4aba-8acb-4a61841c7203",
+      "name": "Vidéo",
+      "nodeIds": [
+        "b87d7255-7f44-463b-a81a-f14bfa37e07c",
+        "2d8c42c6-e390-4c0b-bcef-7e1d7787f9f7",
+        "3bb44b97-7751-49a8-9a18-94661ebafd3f"
+      ]
+    },
+    {
+      "id": "73cf38cc-5ad2-4080-bf5c-f08f9d04fd43",
+      "name": "FFMPEG MERGE",
+      "nodeIds": [
+        "fc61039b-57d1-4cfb-bdb2-691e5b9b3d84",
+        "29708aac-0e33-4aa1-bcc0-c2d17fef8880",
+        "bc3a3020-6a2c-42f6-b4d8-e893ee249693"
+      ]
+    }
+  ],
+  "id": "7CYXgGdIEh9djG4X",
+  "tags": []
+}
